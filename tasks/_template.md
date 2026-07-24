@@ -8,7 +8,7 @@ repos: []                    # 涉及的代码仓
 branches: []                 # 开工时填
 depends_on: []               # 依赖的 TASK / 他人分支;无则留空
 needs_ack: no                # 触及契约/共享文件/共享资源/鉴权 → yes,合并前拿 [ack]
-created: YYYY-MM-DD
+created: YYYY-MM-DD   # UTC 日期(rules/02 §0)
 ---
 
 ## 目标

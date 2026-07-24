@@ -57,7 +57,7 @@
 
 ## 4. 本仓提交规范
 
-`[<handle>] <type>: <内容>`,type ∈ `msg` / `status` / `task` / `rule`(需双签)/ `contract`(需 ack)/ `plan` / `chore`。push 前 `git pull --rebase origin main`;冲突(极少)union 保留双方。
+`[<handle>] <type>: <内容>`,type ∈ `msg` / `status` / `task` / `rule`(需双签)/ `contract`(需 ack)/ `plan` / `chore`。**一切时间戳一律 UTC**(rules/02 §0):文件名 `YYYYMMDD-HHMMZ-…`、YAML `date: …T…Z`,取时间必须 `date -u`,禁止读本地时钟直接格式化。push 前 `git pull --rebase origin main`;冲突(极少)union 保留双方。
 
 ## 5. 快速索引
 

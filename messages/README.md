@@ -4,7 +4,7 @@
 
 **结构**:`inbox/<handle>/` 每位成员一个收件目录(实例化时由向导创建);`archive/` 归档。
 
-**发**:在 `inbox/<收件人>/` 建文件 `YYYYMMDD-HHMM-<发件人>-<slug>.md`,YAML 头(from/to/date/re/needs_reply/status: open)。发出后不改正文。
+**发**:在 `inbox/<收件人>/` 建文件 `YYYYMMDD-HHMMZ-<发件人>-<slug>.md`(**时间为 UTC,`Z` 后缀必带**,取自 `date -u +%Y%m%d-%H%M`;见 rules/02 §0),YAML 头(from/to/date/re/needs_reply/status: open,date 用 `…T…Z` UTC 格式)。发出后不改正文。
 
 **收**:简单确认 → 尾部追加 `> [ack] <handle> <时间>: <一句话>`,status 改 answered;要展开 → 新建反向信(slug 加 `re-`);处理完由**收件人** `git mv` 进 `archive/`。
 

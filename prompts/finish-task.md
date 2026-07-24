@@ -35,7 +35,7 @@ git push origin feat/<handle>-task____-<slug>
 ---
 from: <handle>
 to: <handle>
-date: <now>
+date: <now,UTC,格式 YYYY-MM-DDTHH:MMZ;取自 date -u>
 re: TASK-____
 needs_reply: no|yes
 status: open

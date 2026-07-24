@@ -4,6 +4,16 @@
 
 ---
 
+## 0. 时间规范(全山统一 UTC)
+
+**本仓一切时间戳一律使用 UTC**:信件文件名、YAML `date:`、任务 `created:`、状态板与变更单日期,无一例外。
+
+- 文件名分钟精度,**带 `Z` 后缀自证口径**:`YYYYMMDD-HHMMZ-<handle>-<slug>.md`;
+- YAML 时间:`date: 2026-01-01T13:15Z`;纯日期字段按 UTC 日期;
+- **取时间必须用 `date -u`**(文件名:`date -u +%Y%m%d-%H%M` 后加 `Z`;YAML:`date -u +%Y-%m-%dT%H:%MZ`)。**禁止读本地时钟直接格式化**——成员与 agent 分布在不同机器、不同时区,谁也不该假设别人的时钟。
+- 为什么:信箱与任务靠文件名字典序呈现时间序,**这只在单一时区口径下成立**。两个时区各写各的,同一天的信就会乱序——这是真实踩过的坑,不是假设。
+- 排序仍有争议时(比如手滑写错),以 `git log --diff-filter=A --format=%aI -- <文件>` 的首次提交时间为权威。
+
 ## 1. 通讯时机
 
 | 时刻 | 必做 |
@@ -26,14 +36,14 @@
 **发** = 在 `messages/inbox/<收件人>/` 新建文件:
 
 ```
-YYYYMMDD-HHMM-<发件人handle>-<slug>.md
+YYYYMMDD-HHMMZ-<发件人handle>-<slug>.md      # 时间为 UTC,Z 后缀必带(§0)
 ```
 
 ```yaml
 ---
 from: <handle>
 to: <handle>            # 群发广播用 all(放进每个人的 inbox,或建 inbox/all/ 由各自确认)
-date: YYYY-MM-DD HH:MM
+date: YYYY-MM-DDTHH:MMZ # UTC(§0),取自 date -u
 re: TASK-XXXX | general
 needs_reply: yes | no
 status: open            # open → answered → archived,只有收件人改
