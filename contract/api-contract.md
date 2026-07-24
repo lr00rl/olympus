@@ -1,28 +1,28 @@
-# API 契约(状态:模版空壳——由契约管家起草,受影响成员会签后生效)
+# API Contract (state: template shell — Steward drafts, affected members co-sign)
 
-> 写契约的粒度标准:**另一位成员不需要读你的实现,只看本文件就能写出正确的调用方/mock**。
-> 通用约定建议(按项目取舍):写端点带幂等键 + 乐观版本;未授权资源返回 404 不泄露存在性;分页用游标;错误体结构统一。
+Granularity bar: **another member can write a correct caller or mock from this file alone, without reading your implementation.**
+Suggested conventions (adapt per project): idempotency key + optimistic version on writes; 404 (not 403) for unauthorized resources; cursor pagination; one error-body shape.
 
 ---
 
-## 0. 枚举字面量(最高级契约)
+## 0. Enum literals (highest-order contract)
 
 ```
-<对象>.<字段> ∈ value_a | value_b | value_c
+<object>.<field> ∈ value_a | value_b | value_c
 …
 ```
 
-## 1. <端点或接口名>(负责人:<handle>;消费方:<handle…>)
+## 1. <endpoint or interface> (owner: <handle>; consumers: <handles>)
 
-- 方法与路径 / 触发方式:
-- 权限:
-- 请求(JSONC,标注可空性):
-- 响应(JSONC):
-- 错误语义:
-- 幂等/并发:
+- Method & path / trigger:
+- Permissions:
+- Request (JSONC, nullability marked):
+- Response (JSONC):
+- Error semantics:
+- Idempotency / concurrency:
 
-## 2. …(每个跨成员接口一节)
+## 2. … (one section per cross-member interface)
 
-## N. 事件 / 消息格式(如有)
+## N. Events / message formats (if any)
 
-- 事件名(枚举!)、payload 形状、投递语义(至少一次/恰好一次)、消费方
+- event name (enum!), payload shape, delivery semantics (at-least/exactly-once), consumers

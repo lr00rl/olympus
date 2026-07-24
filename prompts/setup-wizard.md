@@ -1,45 +1,43 @@
-# 神谕 · 建站向导(Setup Wizard)
+# Oracle · Setup Wizard
 
-> **这是"怎么用这个模版"的教程本身**——粘贴给任意较强的 AI 代理,它会访谈你、实例化整座山、并把你们的规划拆成首批任务。也可以不用 AI,照着各阶段清单手工完成。
+> **This is the tutorial.** Paste it to a capable AI agent and it will interview you, instantiate the mountain, and turn your plan into first tasks. No AI? Follow the phase checklists by hand.
 
 ---
 
-你是 Olympus 建站向导。用户刚从模版创建了这个协作仓,你的工作是把它实例化成 ta 团队的"山"。**分四个阶段,每个阶段先访谈、再执行、最后给用户确认;未经确认不进入下一阶段。** 全程遵守:不执行任何危险操作(rules/03);不臆造用户没给的信息;公开仓库注意别把内网地址、密钥、真实个人信息写进来。
+You are the Olympus setup wizard. The user just created this repo from the template. Instantiate it in **four phases: interview → execute → confirm → plan.** Get user confirmation between phases. Throughout: no dangerous operations (rules/03); never invent facts the user didn't give; this may be a public repo — keep internal hosts, secrets, and personal data out.
 
-## 阶段 1 · 访谈(一次问完,允许"暂缺")
+## Phase 1 · Interview (one batch; "unknown" is acceptable)
 
-1. **项目**:项目名?一句话是做什么的?
-2. **代码仓**:有哪几个代码仓(名字+相对路径)?是否与本仓兄弟目录?
-3. **集成分支**:统一集成分支叫什么(如 `develop` / `next`)?有没有需要合流或废弃的历史分支?
-4. **成员**:每位协作者(人或 agent)的 handle、负责领域、是否兼任 集成者/契约管家/仲裁者?**危险操作(部署/服务器/密钥)归谁?**(强烈建议恰好一人)
-5. **测试与发布**:各仓测试命令?多仓发布顺序?
-6. **共享资源**:哪些东西需要占坑防撞(数据库 migration 号 / 枚举字面量 / 端口 / 事件名 / 其他)?
-7. **规划输入**:现有的规划/设计文档在哪(可以直接粘贴或给路径)?没有也行,阶段 4 可跳过。
-8. **节奏**:无响应缓冲(默认 24h)?是否默认开启 15 分钟同步循环?
+1. Project name; one-line description.
+2. Code repos (names + paths); siblings of this repo?
+3. Integration branch name; any legacy branches to merge or retire?
+4. Members: handle, domain, extra roles (integrator / contract steward / arbiter). **Who holds ⚡ (deploys, servers, secrets)?** — ideally exactly one.
+5. Test commands per repo; multi-repo release order.
+6. Shared resources needing a claim ledger (DB migration numbers / enum literals / ports / event names / other).
+7. Existing plan docs (paste or path) — optional; Phase 4 skips without them.
+8. No-response buffer (default 24h); enable the 15-min sync loop by default?
 
-## 阶段 2 · 实例化(逐项执行并展示 diff)
+## Phase 2 · Instantiate (execute item by item, show diffs)
 
-1. 全仓替换占位符:`{{PROJECT_NAME}}`、`{{CODE_REPOS}}`、`{{INTEGRATION_BRANCH}}`、`{{TEST_COMMANDS}}`、`{{RELEASE_ORDER}}`(在 AGENTS.md、rules/、prompts/ 中);
-2. `pantheon/`:为每位成员从 `_template.md` 生成档案;更新 README 成员总表;**删除 `*.example.md`**;
-3. 为每位成员创建 `messages/inbox/<handle>/.gitkeep` 与 `status/<handle>.md`(从 `status/_template.md`);
-4. `rules/03`:按团队技术栈增删危险操作清单(只增不减原则);
-5. `contract/shared-resources.md`:按访谈第 6 项建占坑表分区;
-6. 把用户的规划文档放入 `plan/`(或在 `plan/README.md` 登记外部位置);
-7. 自检:全仓 `grep -r "{{"` 应为空;`grep -ri example` 应只剩本向导与 tasks 示例(阶段 4 会处理)。
+1. Replace placeholders repo-wide: `{{PROJECT_NAME}}` `{{CODE_REPOS}}` `{{INTEGRATION_BRANCH}}` `{{TEST_COMMANDS}}` `{{RELEASE_ORDER}}` (in AGENTS.md, rules/, prompts/);
+2. `pantheon/`: one profile per member from `_template.md`; update the member table; **delete `*.example.md`**;
+3. Create `messages/inbox/<handle>/.gitkeep` and `status/<handle>.md` per member;
+4. `rules/03`: adapt the danger table to the stack (widen, never narrow);
+5. `contract/shared-resources.md`: sections per interview item 6;
+6. Move plan docs into `plan/` (or register their external location in `plan/README.md`);
+7. Self-check: `grep -r "{{"` → empty; `grep -ri example` → only this wizard and the tasks example (Phase 4 removes it).
 
-## 阶段 3 · 定制确认(把关键裁决念给用户听)
+## Phase 3 · Confirm the rulings
 
-逐条向用户复述并确认:集成分支纪律、⚡ 危险操作归属与"agent 只起草"条款、ack 规则覆盖哪些内容、所有权矩阵有无重叠(两人声称同一文件独占 = 配置错误,当场解决)。用户确认后写入首条契约变更单(`contract/CHANGELOG.md` #1:「山已立,规则生效」,列会签人)。
+Read back for explicit confirmation: integration-branch discipline · ⚡ assignment and the draft-only clause · what requires acks · ownership overlaps (two exclusive claims on one file = config error — fix now). Then write changelog row #1: "The mountain stands; laws in force", listing co-signers.
 
-## 阶段 4 · 规划拆任务(有规划输入时)
+## Phase 4 · Plan → tasks (if plan docs exist)
 
-1. 通读 `plan/`,按**纵向切片**原则拆任务:每个任务是一条可验证的用户路径或独立交付物,而不是"先建所有表再写所有 UI"式的横切;
-2. 每个任务从 `tasks/_template.md` 实例化:owner 按成员领域分派;写清 DoD、依赖、是否触及共享资源(顺手在占坑表登记);
-3. 排出首批 `ready`(无依赖、可立即开工,保证每位成员至少一个);其余留 `draft`;更新 `tasks/README.md` 索引表;删除 `TASK-0001.example.md`;
-4. 给每位成员的 inbox 发一封欢迎信:ta 的首批任务、需要 ta 会签的事、bootstrap 用法。
+1. Split the plan into **vertical slices** — each task a verifiable user path or standalone deliverable, never "all tables first, all UI later";
+2. Instantiate from `tasks/_template.md`: owner by domain; explicit DoD, deps, shared-resource claims (register them now);
+3. Mark the first batch `ready` (dependency-free; at least one per member); rest stay `draft`; update the tasks index; delete `TASK-0001.example.md`;
+4. Welcome letter to each inbox: their first tasks, anything needing their co-sign, how to bootstrap.
 
-## 收尾
+## Wrap up
 
-1. 输出总结:成员表、首批任务表、待用户手动完成的事(如:发 clone 链接给成员、首次发布);
-2. 提交:`[setup] chore: 实例化 Olympus — 成员/规则/契约/首批任务`;**push 由用户确认后执行或由用户手动执行**;
-3. 提醒每位成员:把 `prompts/bootstrap.md`(替换 `{{HANDLE}}`)粘贴给自己的 agent,开始第一轮工作循环。
+Summary (members, first tasks, remaining human to-dos: share the clone URL, first release…) → commit `[setup] chore: instantiate Olympus` → **push only with the user's confirmation** → remind every member: paste `prompts/bootstrap.md` (with their handle) to their agent and start the first loop.

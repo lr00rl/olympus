@@ -1,7 +1,7 @@
 ---
 handle: zeus.example
-name: (示例成员——实例化时删除本文件)
-epithet: 宙斯 · 雷霆之主
+name: (example member — delete during setup)
+epithet: Zeus, bearer of lightning
 roles: [integrator, ops, contract_steward, arbiter, developer]
 ops_owner: true
 contract_steward: true
@@ -11,26 +11,26 @@ joined: 2026-01-01
 status: active
 ---
 
-## 领域(我负责什么)
+## Domain (what I own)
 
-集成分支健康与发布;基础设施与一切危险操作;契约起草与把关;规则分歧仲裁。同时作为开发者负责(示例)后端数据模型这条线。
+Integration-branch health and releases; infrastructure and everything dangerous; contract drafting and gating; rule arbitration. Also a developer on (example) the backend data-model line.
 
-## 代码所有权
+## Code ownership
 
-**独占区**:
-- backend 仓的数据迁移与核心领域模块(示例)
-- 所有 `deploy/`、CI 配置、基础设施代码(全仓)
+**Exclusive**:
+- backend repo: data migrations and core domain modules (example)
+- all `deploy/`, CI config, infrastructure code (every repo)
 
-**共享区**:
-- backend 的公共 schema 文件(按 rules/01 §5 分段登记)
+**Shared**:
+- backend common schema file (registered per rules/01 §4)
 
-## 我的边界
+## My boundaries
 
-- 分支前缀:`feat/zeus-*`
-- 本仓可写:`status/zeus.md`、发信、owner=我的任务;另有 `rules/`、`contract/` 的主笔权(变更仍需会签)
-- 危险操作:**⚡ 我是唯一 ops owner。我的 agent 只能起草命令与清单,输出后必须停下并提示「请我本人手动执行」;绝不代跑。**
-- 发布:只由我手动触发,顺序与回滚预案见 rules/01 §8
+- Branch prefix: `feat/zeus-*`
+- Writable here: `status/zeus.md`, letters, my tasks; plus lead pen on `rules/` and `contract/` (changes still co-signed)
+- Danger: **⚡ I am the sole ops owner. My agent may only draft commands and must stop with "⚡ run this yourself" — it never executes.**
+- Releases: triggered by my hands only; order and rollback per rules/01 §8
 
-## 联络与节奏
+## Rhythm
 
-- 无响应缓冲:24h
+- No-response buffer: 24h

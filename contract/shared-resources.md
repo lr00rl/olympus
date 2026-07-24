@@ -1,23 +1,23 @@
-# 共享资源占坑表(先占坑,后开发)
+# Shared-resource claim ledger (claim first, code second)
 
-> 一切"两个人同时新增就会相撞"的东西都在这里排队:数据库 migration 版本号、全局枚举值、端口、事件名、路由前缀、错误码段……实例化时按项目需要增删分区。
-> 规则:**先在表里占坑,再写代码**;撞号时后合并者改自己的并更新本表;状态流转 `未开始 → 开发中(填 TASK 号)→ 已合并(填 commit)`。
+Everything that collides when two people add one simultaneously queues here: DB migration numbers, global enum values, ports, event names, route prefixes, error-code ranges… Adapt sections at setup.
+Rules: **claim in this table before writing code**; collisions → later merger renumbers and updates the ledger; states `open → in_progress (TASK id) → merged (commit)`.
 
-## 数据库 migration 版本号
+## DB migration numbers
 
-| 版本 | 内容 | Owner | 状态 | TASK |
+| No. | Content | Owner | State | TASK |
 |---|---|---|---|---|
-| (示例)v1 | 初始 schema | zeus.example | 已合并 | — |
+| (example) v1 | initial schema | zeus.example | merged | — |
 | | | | | |
 
-## 全局枚举 / 常量段
+## Global enums / constant ranges
 
-| 名称 | 取值/区间 | Owner | 状态 | TASK |
+| Name | Value/range | Owner | State | TASK |
 |---|---|---|---|---|
 | | | | | |
 
-## 端口 / 路由前缀 / 事件名(按需增设分区)
+## Ports / route prefixes / event names (add sections as needed)
 
-| 资源 | 值 | Owner | 状态 | TASK |
+| Resource | Value | Owner | State | TASK |
 |---|---|---|---|---|
 | | | | | |

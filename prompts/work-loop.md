@@ -1,58 +1,53 @@
-# 神谕 · 工作循环(Work Loop)——防"提前收工"
+# Oracle · Work Loop (anti-idle, anti-drift)
 
-> 解决 agent 最常见的失败模式:**bootstrap 之后做完一两件事,就开始总结陈词、结束会话**,而任务列表里还剩一堆活。
-> 本文件被 bootstrap 引用,agent 在整个会话期间持续遵循;人类也可以在会话中途粘贴本文件把跑偏的 agent 拉回循环。
+> Fixes the two commonest agent failures: **quitting early** (one small thing done, farewell summary, session over — with ready tasks left) and **going dark** (a long task swallows the agent; it stops syncing). Referenced by bootstrap; humans can paste it mid-session to restore the loop.
 
 ---
 
-## 1. 循环形态
+## 1. The loop
 
 ```
-        ┌───────────────────────────────────────────────────────────┐
-        ▼                                                           │
-  ①同步 → ②选任务 → ③开工登记 → ④施工 → ⑤验证 → ⑥收尾合并 → ⑦检查点汇报 ─┘
+  ┌────────────────────────────────────────────────────────┐
+  ▼                                                        │
+①Touch → ②Pick → ③Start → ④Build → ⑤Verify → ⑥Finish → ⑦Checkpoint ─┘
 ```
 
-| 步 | 做什么 | 参考 |
+| Step | Action | Ref |
 |---|---|---|
-| ①同步 | Olympus 仓 `pull --rebase`;读新信、对方状态板、契约变更单 | rules/02 |
-| ②选任务 | 优先级:当前 in_progress > 收件箱里别人在等我的(ack/review/回信)> ready 且无依赖 > 从 plan/ 实例化新任务 | tasks/README |
-| ③开工登记 | 按 `prompts/start-task.md`(状态、分支、施工计划) | |
-| ④施工 | 小步 commit;守住所有权边界与铁律 | rules/01/03 |
-| ⑤验证 | 跑测试/真实运行;记录真实结果 | |
-| ⑥收尾合并 | 按 `prompts/finish-task.md`(合并、通讯、归档) | |
-| ⑦检查点汇报 | 输出 §3 格式的检查点,然后**回到①** | |
+| ① Touch | pull Olympus, scan inbox & changelog, push status delta | AGENTS.md §2 |
+| ② Pick | priority: in_progress > letters where someone waits on me (ack/review/reply) > `ready` w/o deps > instantiate from plan/ | tasks/README |
+| ③ Start | `prompts/start-task.md` | |
+| ④ Build | small commits; ownership boundaries; **Touch after each commit** | rules/01/03 |
+| ⑤ Verify | run tests / real execution; record real numbers | |
+| ⑥ Finish | `prompts/finish-task.md` | |
+| ⑦ Checkpoint | emit §3 report, then **back to ①** | |
 
-## 2. 反停机条款(anti-idle)
+## 2. Anti-idle / anti-drift clauses
 
-1. **完成一个任务 ≠ 会话结束。** ⑥之后的下一步永远是⑦然后①,不是"总结"。
-2. **想写收尾语之前,强制自检三连**:
-   - 当前任务的 DoD 每一项都勾了吗?
-   - `tasks/` 里还有 `ready` 且无依赖的任务吗?
-   - 我的收件箱还有 `status: open` 的信吗?
-   **任何一项答"是/有" → 回到循环①。**
-3. **"已发信等回复"不是停止理由**——发信留痕后立刻换任务(rules/02 §4)。
-4. **"这个任务太大"不是停止理由**——把它拆成子任务写回 tasks/(draft→ready),然后做第一个子任务。
-5. **部分完成禁止伪装完成**:只做了计划不算、代码写一半不算、测试没跑不算;如果确实要中断,任务标 `in_progress` 并在日志里写清断点,不许标 done。
-6. 单个任务连续受挫 3 次(同一错误反复)→ 停止硬试,把已知信息写进任务日志,标 blocked 发信,换任务。
+1. **Finishing a task ≠ ending the session.** After ⑥ comes ⑦ then ①, not a farewell.
+2. **Before writing any summary, run the three checks**: DoD all ticked? · any `ready` task left? · any `open` letter? — **any "yes" → back to ①.**
+3. "Sent a letter, waiting" is not a stop — switch tasks (rules/02 §4).
+4. "This task is huge" is not a stop — split it into subtasks in tasks/ and do the first one. **The Touch cadence survives inside big tasks**: however deep you are, every commit-level step ends with a Touch. If you notice you haven't touched the mountain in a long stretch — stop building, Touch, then continue.
+5. Partial work never poses as done: plan-only isn't done, half-written isn't done, untested isn't done. Interrupting? keep `in_progress`, log the break-point.
+6. Same error three times in a row → stop grinding: log findings to the task, mark `blocked`, letter, switch.
 
-## 3. 检查点报告(每轮循环结束输出给人类)
+## 3. Checkpoint report (end of every cycle)
 
 ```
-── 循环检查点 #N ──
-✔ 本轮完成:TASK-xxxx <一句话>(commit <hash> / 测试 <真实数字>)
-▶ 下一轮:TASK-yyyy <一句话理由(为什么选它)>
-⏸ 阻塞/在等:<发给谁的什么信,或"无">
-☰ 余量:ready 任务 <n> 个,open 信 <m> 封
+── checkpoint #N ──
+✔ done:    TASK-xxxx <one line> (commit <hash> / tests <real numbers>)
+▶ next:    TASK-yyyy <why this one>
+⏸ waiting: <letter to whom about what | none>
+☰ backlog: <n> ready tasks, <m> open letters
 ```
 
-人类看到检查点可以随时说"停"或改变方向;**没有指示就继续循环**。
+The human may redirect at any checkpoint; **no instruction means keep looping**.
 
-## 4. 合法停止条件(仅四种)
+## 4. Legal stops (only four)
 
-1. 人类明确叫停;
-2. 无 `ready` 任务、无可从 plan/ 实例化的任务、收件箱无 open——山上确实无事可做;
-3. 达到人类预设的会话预算(时间/成本/轮数);
-4. 唯一可推进的事需要人类决策(且无任何替代任务)。
+1. The human says stop;
+2. No `ready` tasks, nothing to instantiate from plan/, inbox empty — the mountain is quiet;
+3. The human's session budget (time/cost/cycles) is reached;
+4. The only possible step needs a human decision and no alternative task exists.
 
-停止时必须:输出最终检查点 + 更新状态板 + push 本仓——**让下一个会话(或别人)能无缝接上,才算合格的停**。
+A legal stop still ends with: final checkpoint + status board updated + Olympus pushed — **leave the mountain so the next session picks up seamlessly**.

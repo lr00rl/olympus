@@ -1,7 +1,7 @@
-# 契约变更单(追加式,永不删除)
+# Contract change log (append-only, never deleted)
 
-> 每次契约变更一行;会签 = 受影响成员在关联信件里留 `[ack]` 行,并把「会签」列打 ✅。
+One row per change; co-sign = affected members' `[ack]` in the linked letter, then tick the row.
 
-| # | 日期 | 接口/枚举/资源 | 变更 | 原因 | 影响面 | 关联信件 | 会签 |
+| # | Date (UTC) | Interface/enum/resource | Change | Reason | Impact | Letter | Co-signed |
 |---|---|---|---|---|---|---|---|
-| 1 | (实例化时填)| 山已立,初版契约生效 | — | setup | 全体 | — | ☐ |
+| 1 | (at setup) | The mountain stands; laws in force | — | setup | all | — | ☐ |

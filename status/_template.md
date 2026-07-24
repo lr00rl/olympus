@@ -1,9 +1,9 @@
-# 状态板 · <handle>(只有本人可写)
+# Status · <handle> (writable by me only)
 
-- **当前任务**:TASK-____ · <一句话> | —
-- **分支**:—
-- **今天在做**:—
-- **阻塞**:—(卡在哪、发了什么信)
-- **接下来**:—
-- **最近完成**(≤5 条):
-  - (空)
+- **Current task**: TASK-____ · <one line> | —
+- **Branch**: —
+- **Doing today**: —
+- **Blocked**: — (on what; which letter sent)
+- **Next**: —
+- **Recent** (≤5):
+  - (empty)

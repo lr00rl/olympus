@@ -1,7 +1,7 @@
-# plan/ · 神图(项目规划文档)
+# plan/ · The charts (your project's planning docs)
 
-这里放**你们项目自己的**规划、设计、架构文档——模版不预设内容。
+Your **own** project's plans, designs, and architecture live here — the template presets nothing.
 
-- 建站向导(`prompts/setup-wizard.md`)阶段 2 会把你的规划文档放进来(或在此登记外部位置);阶段 4 据此拆出首批任务。
-- 修订规则(rules/04):定稿不改原文,修订走新增递增编号文件;与 `contract/` 冲突时以 contract 为准。
-- 建议至少包含:一页总纲(定位/概念模型)、任务底册(可拆成 TASK 的粒度)、名词对照表(全山统一用语)。
+- The setup wizard (Phase 2) moves your plan docs in (or registers their external location here); Phase 4 splits them into first tasks.
+- Revision rule (rules/04): finalized docs are never edited in place — amendments are new, numbered files; on conflict, `contract/` wins.
+- Recommended minimum: a one-page overview (positioning / concept model), a backlog at task-splittable granularity, and a glossary (one vocabulary for the whole mountain).

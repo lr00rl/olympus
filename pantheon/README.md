@@ -1,30 +1,30 @@
-# pantheon/ · 众神殿(成员注册表)
+# pantheon/ · Hall of the Gods (member registry)
 
-> 每位协作者——**人或 agent**——一份神格档案。这是身份、权限与分工的唯一权威;`AGENTS.md` 的身份协议、`rules/03` 的边界执行,全部指向这里。
+One profile per collaborator — **human or agent**. This is the sole authority on identity, permissions, and division of labor; `AGENTS.md §0` and `rules/03` both point here.
 
-## 成员总表(新增/变更成员时手工维护)
+## Member table (maintain by hand on join/change)
 
-| Handle | 神格(可选) | 角色 | 领域(一句话) | 分支前缀 | ⚡危险操作 | 特权 |
+| Handle | Epithet | Roles | Domain (one line) | Branch prefix | ⚡ Danger | Privileges |
 |---|---|---|---|---|---|---|
-| `zeus.example` | 宙斯 | 集成者+运维 | 集成分支把关、发布、基础设施 | `feat/zeus-*` | **⚡ 是(唯一)** | 契约权威、发布权 |
-| `athena.example` | 雅典娜 | 开发者 | (示例)前端与工作台体验 | `feat/athena-*` | 否 | — |
+| `zeus.example` | Zeus | integrator+ops | integration gate, releases, infra | `feat/zeus-*` | **⚡ yes (sole)** | contract authority, release |
+| `athena.example` | Athena | developer | (example) frontend & workbench | `feat/athena-*` | no | — |
 
-> ⚠️ 上面两行是**示例**,实例化时(setup-wizard)替换为真实成员并删除 `.example` 档案。
+> ⚠️ The two rows above are **examples** — replace with real members and delete the `.example` profiles during setup.
 
-## 角色词表(一人可兼多角色)
+## Role vocabulary (one person may hold several)
 
-| 角色 | 职责 | 数量建议 |
+| Role | Duty | Count |
 |---|---|---|
-| **集成者 Integrator** | 集成分支健康、汇总验证、冲突仲裁 | ≥1 |
-| **运维 Ops Owner ⚡** | 唯一可执行危险操作的人(**本人手动**,agent 只起草) | 尽量 1 |
-| **契约管家 Contract Steward** | `contract/` 起草与变更把关 | 1 |
-| **开发者 Developer** | 认领任务、纵向交付 | N |
-| **评审者 Reviewer** | 跨线 code review(通常互为) | N |
-| **仲裁者 Arbiter** | 规则分歧的最终裁决(纯 agent 团队必须是人类) | 1 |
+| **Integrator** | integration-branch health, verification, conflict arbitration | ≥1 |
+| **Ops Owner ⚡** | the only one who executes dangerous ops (**by hand**; agents draft at most) | ideally 1 |
+| **Contract Steward** | drafts and gates `contract/` | 1 |
+| **Developer** | claims tasks, delivers vertical slices | N |
+| **Reviewer** | cross-line code review (usually mutual) | N |
+| **Arbiter** | final call on rule disputes (must be human in pure-agent teams) | 1 |
 
-## 档案规则
+## Profile rules
 
-1. 档案文件名 = handle:`pantheon/<handle>.md`;handle 用小写英文,同时是分支前缀、信箱目录名、提交前缀。
-2. **只有本人(及其 agent)可以改自己的档案**;角色/权限的变更需仲裁者 ack(消息留痕)。
-3. 新成员入伙流程:复制 `_template.md` → 填档案 → 在上表加一行 → 建 `messages/inbox/<handle>/` 与 `status/<handle>.md` → 首次 bootstrap。
-4. 代码所有权矩阵写在各自档案里;**两份档案声称同一文件的独占权 = 配置错误**,发现即发消息给仲裁者。
+1. Filename = handle: `pantheon/<handle>.md`; lowercase; the handle is also the branch prefix, inbox directory, and commit prefix.
+2. **Only the member (and their agent) edits their own profile**; role/permission changes need the Arbiter's ack (letter on record).
+3. Onboarding: copy `_template.md` → fill → add a row above → create `messages/inbox/<handle>/` and `status/<handle>.md` → first bootstrap.
+4. Code-ownership matrices live inside each profile. **Two profiles claiming the same file exclusively = config error** — letter to the Arbiter on sight.

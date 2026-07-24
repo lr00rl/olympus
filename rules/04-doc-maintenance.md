@@ -1,24 +1,21 @@
-# rules/04 · 文档维护
+# rules/04 · Documentation
 
-> 原则:**文档跟着代码走,状态跟着 Olympus 走,设计跟着 plan/contract 走。** 三类不混放。
+Principle: **docs travel with code, state travels with Olympus, design travels with plan/contract.** Never mix the three.
 
-| 类型 | 放哪 | 维护人 | 更新时机 |
+| Kind | Lives in | Maintainer | When |
 |---|---|---|---|
-| 代码文档(README、模块设计、API 说明) | 各代码仓内 | 按 pantheon 所有权:谁 own 模块谁维护 | **与代码同分支同 commit**;改了行为不改文档 = 合并前置不通过 |
-| 状态/进度/消息 | 本仓 status/ tasks/ messages/ | 各写各的 | 任务边界时刻 |
-| 设计/规范/契约 | 本仓 plan/ contract/ rules/ | 契约管家主笔,变更会签 | **先改文档再改代码** |
+| Code docs (README, module design, API notes) | each code repo | module owner per pantheon | **same branch, same commit** as the code; behavior changed but docs not = merge precondition fails |
+| State / progress / letters | this repo: status/ tasks/ messages/ | each their own | task boundaries |
+| Design / rules / contract | this repo: plan/ contract/ rules/ | Contract Steward, co-signed | **docs first, then code** |
 
-## plan/ 的修订规则
+## Revising plan/
 
-- 定稿的规划文件**不改原文**;修订走新增递增编号文件,标明"修订哪一份哪一节";重大方向变化需会签。
-- plan 与 contract 冲突时,**以 contract(活契约)为准**——契约是执行期真值,plan 是规划快照。
+Finalized plans are never edited in place; revisions are new, numbered files stating what they amend. On conflict, **contract/ wins over plan/** — the contract is runtime truth, the plan is a snapshot.
 
-## 每个任务的文档 DoD
+## Per-task doc DoD
 
-finish 信必须列出:①改了哪些代码文档 ②是否触发契约变更(链接变更单条目)③应写未写的欠账(明说,开 chore 任务补;不许静默欠账)。
+The finish letter lists: ① code docs changed ② contract changes triggered (link the changelog row) ③ any doc debt — named explicitly and turned into a chore task, never silent.
 
-## agent 写文档的风格
+## Style for agents
 
-- 术语统一(项目名词表放 plan/);
-- 禁止"应该可用/基本完成"——写清 做了什么/验证了什么/没验证什么;
-- 文档里的命令、路径、端点写之前核对真实存在,禁止想当然。
+Consistent vocabulary (glossary in plan/); no "should work" / "mostly done" — state did / verified / not verified; verify that every command, path, and endpoint you write actually exists.

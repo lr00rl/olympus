@@ -1,11 +1,11 @@
-# contract/ · 冥河誓约(活契约)
+# contract/ · Oaths on the Styx (the living contract)
 
-> 执行期的**唯一真值**(plan/ 是规划快照,冲突以这里为准)。对着冥河发的誓,神也不能违背——违誓者返工。
+Runtime **single source of truth** (plan/ is a snapshot; this wins on conflict). Sworn on the Styx — break an oath, redo the work.
 
-| 文件 | 内容 | 变更方式 |
+| File | Content | Change process |
 |---|---|---|
-| `api-contract.md` | 跨成员接口的形状(端点/枚举字面量/事件/OP payload) | 契约管家起草;任何改动在 `CHANGELOG.md` 加变更单,受影响成员在信中 `[ack]` 会签;未会签不得合入实现 |
-| `shared-resources.md` | 共享资源占坑表(migration 号/枚举/端口/事件名…) | **先占坑后开发**;撞号后合并者改 |
-| `CHANGELOG.md` | 契约变更单(追加式,永不删除) | 一行一变更 |
+| `api-contract.md` | shapes of cross-member interfaces (endpoints / enum literals / events / payloads) | Steward drafts; every change gets a `CHANGELOG.md` row and the affected members' `[ack]` by letter; no ack, no implementation merge |
+| `shared-resources.md` | claim ledger (migration numbers / enums / ports / event names…) | **claim first, code second**; collisions: later merger renumbers |
+| `CHANGELOG.md` | change log (append-only, never deleted) | one row per change |
 
-**冻结流程**:契约管家填好 → 受影响成员逐个 `[ack]` → CHANGELOG 对应行打 ✅ → 生效。生效后**枚举字面量是最高级契约**(所有仓、所有成员共享,变更必须全量同步)。
+**Freeze flow**: Steward fills → affected members `[ack]` one by one → tick the row → in force. From then on, **enum literals are the highest-order contract** (shared by every repo and member; changes sync everywhere).

@@ -1,5 +1,5 @@
-# status/ · 记忆女神(状态板)
+# status/ · Mnemosyne (status boards)
 
-每人一份 `status/<handle>.md`(实例化时由向导从 `_template.md` 创建),**只有本人可写**。
+One `status/<handle>.md` per member (wizard creates from `_template.md`), **writable by that member only**.
 
-状态板是别人了解你的第一入口:只反映"现在",宁可粗但要真;更新时机在任务边界(rules/02 §1)。
+Your board is the first place others look: reflect *now* only; rough is fine, honest is mandatory; update at task boundaries (rules/02 §1) and with every Touch that changed something.

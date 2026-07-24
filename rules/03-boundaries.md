@@ -1,44 +1,44 @@
-# rules/03 · 权限边界(最重要的一条神律)
+# rules/03 · Boundaries (the most important law)
 
-> 一句话:**危险操作只属于 pantheon 中标 ⚡ 的成员,且必须本人手动执行;任何 agent 一律不得执行。** 宙斯不写代码也行,但雷电永远只在他手里。
+One sentence: **dangerous operations belong to the member marked ⚡ in the pantheon, executed by that human's hands only; no agent ever executes them.** Zeus may write no code — but the lightning never leaves his hand.
 
 ---
 
-## 1. 危险操作清单(agent 禁止执行,无例外)
+## 1. Dangerous operations (agents never execute — no exceptions)
 
-| 类别 | 示例 |
+| Category | Examples |
 |---|---|
-| 编排/容器 | kubectl / helm / docker(生产上下文)的任何子命令——含 get/logs 这类只读,统一禁,避免边界模糊 |
-| 发布 | CI/CD 触发(UI、API、CLI 均含);镜像构建推送;任何部署 job |
-| 服务器 | ssh / scp / rsync;云主机启停(控制台/CLI) |
-| 网络 | 反向代理配置与 reload;DNS;证书 |
-| 数据 | 直连共享环境数据库写操作;搜索/消息等基础设施的生产配置变更;对象存储管理 |
-| 密钥 | Secret/凭证的创建、修改、轮换、粘贴;环境变量注入 |
-| 不可逆 | 批量删除、迁移回滚、强制推送、账号管理 |
+| Orchestration | any kubectl / helm / docker subcommand in shared or prod contexts — including "read-only" get/logs; banned wholesale to keep the line bright |
+| Releases | CI/CD triggers (UI, API, CLI); image build & push; any deploy job |
+| Servers | ssh / scp / rsync; cloud instance start/stop (console or CLI) |
+| Network | reverse-proxy config & reload; DNS; certificates |
+| Data | write access to shared-environment databases; prod config of search/queue infra; object-storage administration |
+| Secrets | creating, editing, rotating, or pasting credentials; env-var injection |
+| Irreversible | bulk deletion, migration rollback, force-push, account administration |
 
-> 实例化时按你们的技术栈增删本表,但**"统一禁、宁可过宽"**的原则不变:agent 因为"只是看一眼"而拿到的权限,迟早会变成事故。
+Adapt this table to your stack at setup — but keep the principle: **ban wide, never narrow**. Permissions an agent acquires "just to look" become incidents later.
 
-## 2. 分侧规则
+## 2. Per-side rules
 
-**⚡ ops owner 的 agent:**
-- 可以:起草命令、清单、发布步骤、回滚预案;分析 owner 手动拷贝来的日志;把基础设施**代码**当普通代码改(走分支流程,apply 仍归人)。
-- 必须:每次输出危险命令后停下,以显眼格式提示——
-  > ⚡ **以下命令请 <owner> 本人手动执行**(agent 不代跑):
-- 绝不:以任何理由实际执行;绝不把危险调用藏进脚本再运行该脚本。
+**The ⚡ ops owner's agent:**
+- May: draft commands, checklists, release steps, rollback plans; analyze logs the owner pastes in; edit infra *code* as normal code (branch flow; applying stays human).
+- Must: stop after every drafted command with, prominently:
+  > ⚡ **Run this yourself** — agent does not execute:
+- Never: actually execute, for any reason; never hide a dangerous call inside a script and then run the script.
 
-**其他成员的 agent:**
-- **零接触**:不执行、不起草、不修改部署与基础设施文件。
-- 需要环境/发布/日志/配置 → 写信给 ⚡ owner(带任务号,说清要什么为什么),然后按 rules/02 §4 换任务,不空等。
+**Every other agent:**
+- **Zero contact**: no executing, no drafting, no editing deploy/CI/infra files.
+- Need an environment, a release, logs, a config? → letter to ⚡ (task id, what, why), then switch tasks per rules/02 §4. No idling.
 
-## 3. 发布流程(⚡ owner 手动执行的标准骨架)
+## 3. Release skeleton (⚡ executes by hand)
 
-1. 确认集成分支测试全绿、相关 TASK 均 merged;
-2. 按 `{{RELEASE_ORDER}}` 顺序发布,回滚逆序;
-3. 发布后跑冒烟清单(实例化时沉淀在 plan/ 或本节),**以真实使用验证为准,不以构建通过为准**;
-4. 结果广播一封信 + 更新状态板;遗留问题开 TASK。
+1. Integration branch green; relevant TASKs merged;
+2. Release in `{{RELEASE_ORDER}}` order; rollback in reverse;
+3. Smoke-check by **real use**, not "build passed";
+4. Broadcast the result in a letter + update your status board; leftovers become tasks.
 
-## 4. 为什么这么严
+## 4. Why this strict
 
-- agent 执行危险操作的失败模式不是"出错",是**安静地成功做了错事**;
-- 审计的最小单元是"哪个人类批准了这次执行"——agent 代跑会把这个单元抹掉;
-- 把执行权collapse到一个人,协调成本最低:所有人只需要记住"找 ⚡"。
+- An agent's failure mode with dangerous ops isn't "error" — it's *quietly succeeding at the wrong thing*;
+- The minimal audit unit is "which human approved this execution" — agent-run commands erase it;
+- Collapsing execution to one person minimizes coordination: everyone just remembers "ask ⚡".

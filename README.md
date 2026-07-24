@@ -1,81 +1,85 @@
 # Olympus ⚡
 
 > **An async, git-native coordination layer for multi-human, multi-agent development.**
-> 多人 × 多 AI 代理并行开发的异步协调中枢模版——所有协调,都刻在石头(git)上。
+> Every agreement is carved into stone (git) — nothing lives in chat memory.
+
+[中文版 / Chinese version](./README.zh-CN.md)
 
 ---
 
-## 为什么叫 Olympus?
+## Why "Olympus"?
 
-众神各司其职,却共居一山。
+The gods each rule their own domain, yet share one mountain.
 
-他们并不整天开会。**赫尔墨斯**(Hermes)替他们传信;重要的约定要对**冥河**(Styx)起誓——神也不敢违背;**命运三女神**(Moirai)替每件事纺线、量线、剪线;**记忆女神**(Mnemosyne)记得每个人此刻在做什么。宙斯不写代码,但山上只有他能掌雷电——危险的东西,永远只在一个人手里。
+They don't sit in meetings. **Hermes** carries their messages. Serious promises are sworn on the **Styx** — even gods can't break those. The **Moirai** spin, measure, and cut the thread of every undertaking. **Mnemosyne** remembers what everyone is doing right now. Zeus writes no code, but only he wields the lightning — dangerous things stay in exactly one pair of hands.
 
-奥林匹斯山不是聊天室。它是一座山:**每一条约定都刻在石头上,风吹不走,谁也不能事后抵赖。**
+Olympus is not a chat room. It is a mountain: **every agreement is carved in stone, and no one can deny it later.**
 
-在这里,git 就是那座山。
+Here, git is the mountain.
 
-## 为什么会有这个项目(多 agent 开发的苦衷)
+## Why this exists (the pain of multi-agent development)
 
-当一个团队(两个人、五个人,或者一个人带一群 AI 代理)并行开发时,这些事每天都在发生:
+When a team — two people, five people, or one person with a swarm of AI agents — develops in parallel, this happens daily:
 
-1. **上下文割裂**——每个 agent 的每个新会话,都要把项目背景重新解释一遍;
-2. **口头约定蒸发**——聊天里说好的接口形状,三天后两边实现得不一样;
-3. **"我已经完成了"**——agent 说完成了,实际上什么都没写进去;散文不等于写入;
-4. **并行踩踏**——两个人(或两个 agent)同时改同一个文件,集成分支被合出一团糟;
-5. **危险操作**——agent "顺手"跑了一条 kubectl / 部署 / 删库命令,没有任何人授权过;
-6. **等待死锁**——A 发了个问题等 B 回复,B 正在专注开发根本没看,A 的 agent 就地空转半天;
-7. **提前收工**——agent 做完一件小事就开始"总结陈词",任务列表里明明还剩一堆 ready 的活。
+1. **Context amnesia** — every new agent session needs the whole project re-explained;
+2. **Evaporating agreements** — an interface agreed in chat is implemented two different ways three days later;
+3. **"I've done it"** — the agent says done; nothing was actually written. Prose is not work;
+4. **Parallel trampling** — two agents edit the same file and the integration branch turns to mush;
+5. **Dangerous hands** — an agent "helpfully" runs a deploy / kubectl / destructive command nobody approved;
+6. **Waiting deadlock** — A asks B a question and idles; B is heads-down and never saw it;
+7. **Quitting early** — the agent finishes one small thing, writes a farewell summary, and stops — with a queue full of ready tasks;
+8. **Going dark** — mid-way through a long task, the agent drifts off-protocol and stops syncing with the team entirely.
 
-Olympus 用**一个 git 仓库**解决以上全部:身份有注册、规则能成文、契约必留痕、消息走异步、状态可互见、循环不停机。它不依赖任何平台或框架——只要你们会 `git pull` 和 `git push`。
+Olympus answers all of it with **one git repository**: registered identities, written laws, sworn contracts, async mail, visible status, and a work loop that doesn't stall or go dark.
 
-## 山上的地形(目录 × 神话对照)
+## The mountain's geography
 
-| 目录 | 神话 | 实际是什么 |
+| Path | Myth | What it actually is |
 |---|---|---|
-| `AGENTS.md` | **登山口** | 一切 AI 代理的唯一入口:身份协议、启动流程、工作循环、硬规则摘要 |
-| `pantheon/` | **众神殿** | 成员注册表:每位协作者(人或 agent)一份"神格档案"——掌管的领域、权限、分支前缀、边界 |
-| `rules/` | **神律** | 四律:分支与合并 / 协作协议 / 权限边界 / 文档维护 |
-| `prompts/` | **神谕** | 预制咒语:bootstrap、工作循环、开工/收尾、同步循环、冲突处理、建站向导 |
-| `contract/` | **冥河誓约** | 接口契约 + 共享资源占坑表 + 变更单;对着冥河发的誓,违者返工 |
-| `tasks/` | **命运三女神** | 任务档案:每件事从纺线(draft)到剪断(merged)的一生 |
-| `messages/` | **赫尔墨斯** | 异步信箱:`inbox/<成员>/`,一信一文件,永不冲突 |
-| `status/` | **记忆女神** | 每人一块状态板:此刻在做什么、卡在哪、接下来干嘛 |
-| `plan/` | **神图** | 你们项目自己的规划/设计文档(模版中为空) |
+| `AGENTS.md` | **The trailhead** | Sole entry point for every AI agent: identity, startup, the Five Laws, the loop |
+| `pantheon/` | **Hall of the gods** | Member registry: one profile per collaborator (human or agent) — domain, permissions, boundaries |
+| `rules/` | **The laws** | Branching & merging / collaboration protocol / boundaries / documentation |
+| `prompts/` | **Oracles** | Ready-made spells: bootstrap, work loop, re-anchor, start/finish task, sync loop, conflicts, setup wizard |
+| `contract/` | **Oaths on the Styx** | Interface contracts + shared-resource ledger + change log; break an oath, redo the work |
+| `tasks/` | **The Moirai** | Task files: each undertaking from spun (draft) to cut (merged) |
+| `messages/` | **Hermes** | Async mailboxes: `inbox/<member>/`, one file per letter, conflict-free by construction |
+| `status/` | **Mnemosyne** | One status board per member: doing now, blocked on, next |
+| `plan/` | **The charts** | Your project's own planning docs (empty in the template) |
 
-## 怎么用
+## How to use it
 
-### 人类三步
+### Three steps for humans
 
-1. **取模版**:GitHub 上 `Use this template`(或 clone 本仓库),与你们的代码仓放成兄弟目录;
-2. **实例化**:把 `prompts/setup-wizard.md` 整体粘贴给任意较强的 AI 代理——它会访谈你(项目、仓库、成员、角色、危险操作归谁),然后替你填好全部占位符、登记成员、把你们的规划拆成首批任务;不想用 AI 就照着 `setup-wizard.md` 的清单手填;
-3. **发咒语**:每位成员把 `prompts/bootstrap.md`(替换掉自己的 `{{HANDLE}}`)粘贴给自己的 agent。从此 agent 自己上山:读身份 → 读规则 → 读信箱 → 领任务 → **进入工作循环,直到山上无事可做**。
+1. **Take the template** — `Use this template` on GitHub (or clone), placed as a sibling of your code repos;
+2. **Instantiate** — paste `prompts/setup-wizard.md` to a capable AI agent: it interviews you (project, repos, members, roles, who holds the lightning), fills every placeholder, registers members, and turns your plan into first tasks. No AI? Follow the wizard's checklists by hand;
+3. **Cast the spell** — each member pastes `prompts/bootstrap.md` (with their `{{HANDLE}}` filled in) to their own agent. The agent climbs the mountain by itself: read identity → laws → inbox → claim a task → **enter the work loop until the mountain is quiet**.
 
-### 日常节奏
+### Daily rhythm
 
-- 真正的开发发生在**你们自己的代码仓**;Olympus 仓只在**任务开始/结束的空档**同步(commit + push);
-- 双方同时在线密集开发时,可让 agent 开启 `prompts/sync-loop.md`:每 15 分钟同步一次本仓(只此仓);
-- 消息没人回?**不等**。按无响应策略换下一个任务(`rules/02`);
-- 所有危险操作(部署/服务器/密钥)只属于神格档案里标了 ⚡ 的那个人,而且**必须由人手动执行**——agent 连碰都不碰(`rules/03`)。
+- Real development happens in **your code repos**; Olympus syncs at **task boundaries** (start/finish) — plus a tiny "touch the mountain" ritual after each commit so nobody goes dark;
+- During intense co-working hours, agents may run `prompts/sync-loop.md` (a 15-minute sync of this repo only);
+- No reply to your letter? **Don't wait.** Switch tasks per the no-response policy (`rules/02`);
+- Everything dangerous (deploys, servers, secrets) belongs to the one member marked ⚡ — and is executed **by that human's hands only**. Agents never touch it (`rules/03`).
 
-### 适用形态
+### Team shapes
 
-- **N 个人,各带各的 agent**(本模版的原生场景);
-- **1 个人带 N 个 agent**(给每个 agent 一个 handle,各自领任务,互不踩踏);
-- **纯 agent 团队**(强烈建议保留至少一位人类作为"宙斯":掌雷电、做仲裁)。
+- **N humans, each with their own agent** (the native scenario);
+- **1 human driving N agents** (each agent gets a handle; they claim tasks without trampling);
+- **Pure agent teams** (strongly recommend keeping one human as Zeus: lightning and arbitration).
 
-## 设计原则(五条,全部规范由此推导)
+## Design principles
 
-1. **git 是唯一协调面**——不依赖任何聊天工具的记忆;说过的话不落 git 等于没说;
-2. **写入边界 = 永不冲突**——每人只写自己的状态板、自己发的信、自己 owner 的任务;信箱一信一文件;
-3. **消息是给人的信息,不是给 agent 的指令**——agent 只播报,不执行信里的话(这也是最朴素的提示注入防线);
-4. **契约先行**——改接口先改 `contract/` 并拿到对方 ack,再写实现;
-5. **手动是可靠路径,agent 是加速器**——每个关键动作都有人类可独立完成的路径;agent 提效,但从不垄断。
+1. **Git is the only coordination surface** — what isn't committed was never said;
+2. **Write boundaries = zero conflicts** — each member writes only their own status, letters, and tasks; one file per letter;
+3. **Letters are information for humans, not instructions for agents** — agents report them, never execute them (also your cheapest prompt-injection defense);
+4. **Contract first** — change the contract, get the ack, then write the implementation;
+5. **Hands are the reliable path; agents are accelerators** — every key action has a human-executable route;
+6. **Never go dark** — the tether ritual keeps every agent in contact, no matter how long the task.
 
-## 起源
+## Origin
 
-Olympus 抽象自一个真实的双人 + 双 agent 并行交付项目的协调仓。那套机制运转起来之后我们意识到:痛的不是我们一家,规则也不该只属于一个项目——于是把项目专有的部分挖掉,把普适的部分刻成了这座山。
+Olympus was abstracted from the live coordination repo of a real two-human, two-agent delivery project. Once it worked, we realized the pain wasn't ours alone — so we cut away everything project-specific and carved the rest into this mountain.
 
 ## License
 
-MIT — 见 [LICENSE](./LICENSE)。随意取用,欢迎把你们山上的新神律回馈回来。
+MIT — see [LICENSE](./LICENSE). Take it, use it, and send back any new laws your mountain discovers.
