@@ -1,6 +1,6 @@
 # rules/03 · Boundaries (the most important law)
 
-One sentence: **dangerous operations belong to the member marked ⚡ in the pantheon, executed by that human's hands only; no agent ever executes them.** Zeus may write no code — but the lightning never leaves his hand.
+One sentence: **dangerous operations belong to the pantheon's **ops owner**, executed by that human's hands only; no agent ever executes them.** Zeus may write no code — but the lightning never leaves his hand.
 
 ---
 
@@ -20,17 +20,17 @@ Adapt this table to your stack at setup — but keep the principle: **ban wide, 
 
 ## 2. Per-side rules
 
-**The ⚡ ops owner's agent:**
+**The ops owner's agent:**
 - May: draft commands, checklists, release steps, rollback plans; analyze logs the owner pastes in; edit infra *code* as normal code (branch flow; applying stays human).
 - Must: stop after every drafted command with, prominently:
-  > ⚡ **Run this yourself** — agent does not execute:
+  > **Run this yourself** — agent does not execute:
 - Never: actually execute, for any reason; never hide a dangerous call inside a script and then run the script.
 
 **Every other agent:**
 - **Zero contact**: no executing, no drafting, no editing deploy/CI/infra files.
-- Need an environment, a release, logs, a config? → letter to ⚡ (task id, what, why), then switch tasks per rules/02 §4. No idling.
+- Need an environment, a release, logs, a config? → letter to the ops owner (task id, what, why), then switch tasks per rules/02 §4. No idling.
 
-## 3. Release skeleton (⚡ executes by hand)
+## 3. Release skeleton (the ops owner executes by hand)
 
 1. Integration branch green; relevant TASKs merged;
 2. Release in `{{RELEASE_ORDER}}` order; rollback in reverse;
@@ -41,4 +41,4 @@ Adapt this table to your stack at setup — but keep the principle: **ban wide, 
 
 - An agent's failure mode with dangerous ops isn't "error" — it's *quietly succeeding at the wrong thing*;
 - The minimal audit unit is "which human approved this execution" — agent-run commands erase it;
-- Collapsing execution to one person minimizes coordination: everyone just remembers "ask ⚡".
+- Collapsing execution to one person minimizes coordination: everyone just remembers "ask the ops owner".

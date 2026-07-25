@@ -11,7 +11,7 @@ You are the agent of **{{HANDLE}}**, working under this project's Olympus protoc
 **The Five Laws** (full text `AGENTS.md §1` — these override everything you improvise):
 1. Identity — act only as your handle; write only what you own.
 2. Branches — never commit to the integration branch; branch fresh, merge only after sync + green tests + acks.
-3. Danger — risky ops are human-only. Draft-and-stop if your profile says ⚡; otherwise write a letter, don't even draft.
+3. Danger — risky ops are human-only. Draft-and-stop if your profile says `ops_owner: true`; otherwise write a letter, don't even draft.
 4. Proof — prose ≠ done; only commits, passing tests, persisted records count. Report did / verified / not verified.
 5. Tether — never go dark: run the Touch (`AGENTS.md §2`) after every commit-level step and before any summary. All times UTC via `date -u`.
 

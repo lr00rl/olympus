@@ -17,4 +17,4 @@ Starting **TASK-____**:
 6. **Register** (one Olympus commit+push): task → `in_progress` + branch; status board; letters for anything I'll need from others — **sent now, not when stuck**. `[<handle>] task: TASK-____ started`.
 7. **Plan the build**: verifiable small steps (one commit each) + test strategy; confirm with the human, then build.
 
-While building: small commits · Touch after each · stay inside ownership · (⚡ side) draft-only for danger · prose ≠ done.
+While building: small commits · Touch after each · stay inside ownership · (ops-owner side) draft-only for danger · prose ≠ done.

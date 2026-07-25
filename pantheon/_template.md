@@ -3,7 +3,7 @@ handle: <lowercase, e.g. hermes>
 name: <optional real name / callsign>
 epithet: <optional, for fun>
 roles: [developer]            # see README role vocabulary
-ops_owner: false              # ⚡ ideally exactly one true on the whole mountain
+ops_owner: false              # ideally exactly one true on the whole mountain
 contract_steward: false
 integrator: false
 arbiter: false
@@ -27,7 +27,7 @@ status: active                # active | away | left
 
 - Branch prefix: `feat/<handle>-*`
 - Writable here: `status/<handle>.md`, letters I send, tasks I own
-- Danger: <none | ⚡ I am ops owner: my agent drafts only, I execute by hand>
+- Danger: <none | I am the ops owner: my agent drafts only, I execute by hand>
 - Other: <e.g. "my backend code needs <who>'s review before merge">
 
 ## Rhythm

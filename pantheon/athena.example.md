@@ -28,7 +28,7 @@ status: active
 
 - Branch prefix: `feat/athena-*`
 - Writable here: `status/athena.md`, letters, my tasks
-- **Danger: zero contact.** I neither execute nor draft; I don't touch deploy/CI/infra files. Need an environment, a release, or server logs → letter to ⚡ zeus, then switch tasks — no idling.
+- **Danger: zero contact.** I neither execute nor draft; I don't touch deploy/CI/infra files. Need an environment, a release, or server logs → letter to the ops owner (zeus), then switch tasks — no idling.
 - My backend code needs zeus's review before it merges
 
 ## Rhythm

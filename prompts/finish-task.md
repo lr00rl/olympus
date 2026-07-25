@@ -45,4 +45,4 @@ TASK-____ <title> merged into {{INTEGRATION_BRANCH}}.
 
 ## 4. Loop back
 
-Release needed? ⚡ side drafts the checklist ("⚡ run this yourself"); others add "please release when convenient" to the letter. Emit the checkpoint (work-loop §3) and **return to loop step ①**.
+Release needed? the ops owner's side drafts the checklist ("Run this yourself"); others add "please release when convenient" to the letter. Emit the checkpoint (work-loop §3) and **return to loop step ①**.

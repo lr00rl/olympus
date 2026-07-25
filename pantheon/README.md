@@ -4,9 +4,9 @@ One profile per collaborator — **human or agent**. This is the sole authority 
 
 ## Member table (maintain by hand on join/change)
 
-| Handle | Epithet | Roles | Domain (one line) | Branch prefix | ⚡ Danger | Privileges |
+| Handle | Epithet | Roles | Domain (one line) | Branch prefix | Danger ops | Privileges |
 |---|---|---|---|---|---|---|
-| `zeus.example` | Zeus | integrator+ops | integration gate, releases, infra | `feat/zeus-*` | **⚡ yes (sole)** | contract authority, release |
+| `zeus.example` | Zeus | integrator+ops | integration gate, releases, infra | `feat/zeus-*` | **yes — sole holder** | contract authority, release |
 | `athena.example` | Athena | developer | (example) frontend & workbench | `feat/athena-*` | no | — |
 
 > ⚠️ The two rows above are **examples** — replace with real members and delete the `.example` profiles during setup.
@@ -16,7 +16,7 @@ One profile per collaborator — **human or agent**. This is the sole authority 
 | Role | Duty | Count |
 |---|---|---|
 | **Integrator** | integration-branch health, verification, conflict arbitration | ≥1 |
-| **Ops Owner ⚡** | the only one who executes dangerous ops (**by hand**; agents draft at most) | ideally 1 |
+| **Ops Owner** | the only one who executes dangerous ops (**by hand**; agents draft at most) | ideally 1 |
 | **Contract Steward** | drafts and gates `contract/` | 1 |
 | **Developer** | claims tasks, delivers vertical slices | N |
 | **Reviewer** | cross-line code review (usually mutual) | N |

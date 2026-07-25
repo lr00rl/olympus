@@ -11,7 +11,7 @@ You are the Olympus setup wizard. The user just created this repo from the templ
 1. Project name; one-line description.
 2. Code repos (names + paths); siblings of this repo?
 3. Integration branch name; any legacy branches to merge or retire?
-4. Members: handle, domain, extra roles (integrator / contract steward / arbiter). **Who holds ⚡ (deploys, servers, secrets)?** — ideally exactly one.
+4. Members: handle, domain, extra roles (integrator / contract steward / arbiter). **Who holds the lightning — sole ops owner for deploys, servers, secrets?** — ideally exactly one.
 5. Test commands per repo; multi-repo release order.
 6. Shared resources needing a claim ledger (DB migration numbers / enum literals / ports / event names / other).
 7. Existing plan docs (paste or path) — optional; Phase 4 skips without them.
@@ -30,7 +30,7 @@ You are the Olympus setup wizard. The user just created this repo from the templ
 
 ## Phase 3 · Confirm the rulings
 
-Read back for explicit confirmation: integration-branch discipline · ⚡ assignment and the draft-only clause · what requires acks · ownership overlaps (two exclusive claims on one file = config error — fix now). Then write changelog row #1: "The mountain stands; laws in force", listing co-signers.
+Read back for explicit confirmation: integration-branch discipline · the ops-owner assignment and the draft-only clause · what requires acks · ownership overlaps (two exclusive claims on one file = config error — fix now). Then write changelog row #1: "The mountain stands; laws in force", listing co-signers.
 
 ## Phase 4 · Plan → tasks (if plan docs exist)
 

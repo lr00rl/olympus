@@ -78,10 +78,10 @@ Then push the Olympus side: finish letter + task status + status board.
 5. Shared-resource collisions (migration numbers etc.): later merger renumbers and updates the ledger.
 6. Record in the finish letter: conflicting files + whose semantics won + why.
 
-## 8. Releases & main (Integrator/⚡ only, always by hand)
+## 8. Releases & main (Integrator / ops owner only, always by hand)
 
 - Release from the integration branch; order `{{RELEASE_ORDER}}`, rollback in reverse; data migrations additive only.
-- CI triggers / deploy commands / infra: **⚡ owner's hands**. Agents output a checklist ending with "⚡ run this yourself".
+- CI triggers / deploy commands / infra: **the ops owner's hands**. Agents output a checklist ending with "Run this yourself".
 - Verify by real use, not by "build passed". Broadcast the result in a letter; leftovers become tasks.
 - At milestones the Integrator merges integration → `main` and tags.
 

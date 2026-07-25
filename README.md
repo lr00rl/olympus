@@ -1,4 +1,4 @@
-# Olympus ⚡
+# Olympus
 
 > **An async, git-native coordination layer for multi-human, multi-agent development.**
 > Every agreement is carved into stone (git) — nothing lives in chat memory.
@@ -60,7 +60,7 @@ Olympus answers all of it with **one git repository**: registered identities, wr
 - Real development happens in **your code repos**; Olympus syncs at **task boundaries** (start/finish) — plus a tiny "touch the mountain" ritual after each commit so nobody goes dark;
 - During intense co-working hours, agents may run `prompts/sync-loop.md` (a 15-minute sync of this repo only);
 - No reply to your letter? **Don't wait.** Switch tasks per the no-response policy (`rules/02`);
-- Everything dangerous (deploys, servers, secrets) belongs to the one member marked ⚡ — and is executed **by that human's hands only**. Agents never touch it (`rules/03`).
+- Everything dangerous (deploys, servers, secrets) belongs to the one member who holds the lightning (the ops owner) — and is executed **by that human's hands only**. Agents never touch it (`rules/03`).
 
 ### Team shapes
 

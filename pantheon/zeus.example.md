@@ -28,7 +28,7 @@ Integration-branch health and releases; infrastructure and everything dangerous;
 
 - Branch prefix: `feat/zeus-*`
 - Writable here: `status/zeus.md`, letters, my tasks; plus lead pen on `rules/` and `contract/` (changes still co-signed)
-- Danger: **⚡ I am the sole ops owner. My agent may only draft commands and must stop with "⚡ run this yourself" — it never executes.**
+- Danger: **I am the sole ops owner — the lightning never leaves my hand. My agent may only draft commands and must stop with "Run this yourself" — it never executes.**
 - Releases: triggered by my hands only; order and rollback per rules/01 §8
 
 ## Rhythm
