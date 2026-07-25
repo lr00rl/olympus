@@ -25,7 +25,7 @@ You are the Olympus setup wizard. The user just created this repo from the templ
 4. `rules/03`: adapt the danger table to the stack (widen, never narrow);
 5. `contract/shared-resources.md`: sections per interview item 6;
 6. Move plan docs into `plan/` (or register their external location in `plan/README.md`);
-7. Seed `memory/notes/` with obvious durable facts from the interview (repo maps, env names — never secrets); keep `INDEX.md` in sync;
+7. Seed `memory/notes/`: one `map-<repo>` note per code repo (entry points, key dirs, test command) and one `decision-plan-digest` (≤30 lines) so working sessions read the digest instead of the plan docs; env facts as names only — never secrets; keep `INDEX.md` in sync;
 8. Self-check: `grep -r "{{"` → empty; `grep -ri example` → only this wizard and the tasks example (Phase 4 removes it).
 
 ## Phase 3 · Confirm the rulings
@@ -41,4 +41,4 @@ Read back for explicit confirmation: integration-branch discipline · ⚡ assign
 
 ## Wrap up
 
-Summary (members, first tasks, remaining human to-dos: share the clone URL, first release…) → commit `[setup] chore: instantiate Olympus` → **push only with the user's confirmation** → remind every member: paste `prompts/bootstrap.md` (with their handle) to their agent and start the first loop.
+Summary (members, first tasks, remaining human to-dos: share the clone URL, first release…) → **leave no template residue**: `*.example.*` deleted, `grep -r "{{"` empty — from here on, working agents never open this wizard → commit `[setup] chore: instantiate Olympus` → **push only with the user's confirmation** → remind every member: paste `prompts/bootstrap.md` (with their handle) to their agent and start the first loop.

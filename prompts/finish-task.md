@@ -26,7 +26,7 @@ git push origin {{INTEGRATION_BRANCH}} && git push origin feat/<handle>-task____
 
 1. Task file → `merged`; record: scope, conflicts & resolutions, test numbers, docs touched, leftovers ("none" is a valid entry — say it).
 2. Status board: move to recent, update next.
-3. **Harvest memory**: did this task teach a durable fact (gotcha / decision-why / architecture / map)? Add or update a `memory/` note + `INDEX.md` line — or consciously note there's nothing. (`memory/README.md`)
+3. **Harvest memory** — exactly one op, preferred in this order: **NOOP** (default: most tasks teach nothing durable) / **UPDATE** an existing note / **SUPERSEDE** a now-wrong note / **ADD** (new fact ≤30 lines + index line, `keywords:` carrying paths & verbatim errors). Search `INDEX.md` before adding. (`memory/README.md`)
 4. Finish letter to affected members:
 
 ```markdown

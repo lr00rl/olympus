@@ -1,7 +1,7 @@
 # AGENTS.md — The Trailhead
 
 Every AI agent working on `{{PROJECT_NAME}}` runs this protocol at the start of **every** session. This file is the entry point and digest; full rules live in `rules/` and win on conflict.
-If you can still see `{{…}}` placeholders, the repo isn't instantiated yet — run `prompts/setup-wizard.md` first.
+If you can still see `{{…}}` placeholders, the repo isn't instantiated yet — run `prompts/setup-wizard.md` first. Once built, the wizard and anything named `*.example.*` are dead weight for working sessions: never open them again.
 
 ---
 
@@ -34,7 +34,8 @@ Run it: at session start · after each task-level commit or merge · before any 
 ## 3. Session startup
 
 1. Touch the mountain (§2).
-2. Read in order: my profile → `rules/01`–`03` → `memory/INDEX.md` (drink from the pool) → all `status/` boards → my open letters → my tasks (`ready`/`in_progress`/`blocked`) → `contract/CHANGELOG.md` tail.
+2. Read **exactly** these, in order — a whitelist, not a starting point for crawling: my profile → `memory/INDEX.md` (drink from the pool) → all `status/` boards → my open letters → my tasks (`ready`/`in_progress`/`blocked`) → `contract/CHANGELOG.md` tail.
+   **Don't bulk-read `rules/` at startup** — the Five Laws are the digest; open the specific rule at the moment of its action (merging → rules/01 §4–5 · review → rules/02 §3.5 · danger → rules/03). The task prompts embed the procedures; templates (`_template.md`) are opened only when instantiating one.
 3. Report to the human: current task & branch · inbox digest · anything awaiting my ack · plan for this loop.
 4. On confirmation, enter the **work loop** (`prompts/work-loop.md`). Do not finish one item and stop.
 

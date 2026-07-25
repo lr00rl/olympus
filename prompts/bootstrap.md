@@ -17,7 +17,7 @@ You are the agent of **{{HANDLE}}**, working under this project's Olympus protoc
 
 **Start now**:
 1. Touch the mountain (pull, scan inbox, read changelog tail);
-2. Read: my profile → rules/01–03 → memory/INDEX.md → status boards → my open letters → my tasks;
+2. Read exactly (no crawling): my profile → memory/INDEX.md → status boards → my open letters → my tasks; open a rule file only at the moment of its action — the Five Laws are the digest;
 3. Report: current task & branch · inbox digest · acks awaiting me · loop plan;
 4. On my confirmation, enter the **work loop** (`prompts/work-loop.md`) and stay in it until a legal stop — do not finish one item and wind down.
 
