@@ -8,7 +8,7 @@ Starting **TASK-____**:
 
 1. **Touch** the mountain; report anything affecting this task (contract changes / shared files in motion / blockers).
 2. **Recall**: scan `memory/INDEX.md` for entries matching this task; `grep -ril` its distinctive terms (paths, components, verbatim error strings) in `memory/notes/`; open **at most 3** notes.
-3. **Task file**: open `tasks/TASK-____*.md` (or create from `_template.md`, owner = me). Confirm goal, repos, DoD, deps — deps not ready and un-mockable → switch tasks.
+3. **Task file**: open `tasks/TASK-____*.md` (or create from `_template.md`, owner = me). Confirm goal, repos, **boundaries (Allowed paths)**, DoD (criteria bound to named tests), deps — deps not ready and un-mockable → switch tasks.
 4. **Claims** (if applicable): shared resources → register in `contract/shared-resources.md`; new interfaces → shape must exist in `contract/api-contract.md` first (Steward drafts / others request by letter).
 5. **Branch** (each repo touched):
    ```bash

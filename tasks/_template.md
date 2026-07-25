@@ -15,10 +15,14 @@ created: YYYY-MM-DD          # UTC date (rules/02 §0)
 
 <what, why, the observable result>
 
-## Scope / non-goals
+## Scope & boundaries
 
 - In:
 - Out:
+- **Allowed paths** (globs — checked mechanically at finish):
+  - <repo>/<path>/**
+- **Forbidden** (paths or behaviors that must not change):
+  - <path or "do not touch X behavior">
 
 ## Notes
 
@@ -27,7 +31,8 @@ created: YYYY-MM-DD          # UTC date (rules/02 §0)
 ## DoD
 
 - [ ] merged into {{INTEGRATION_BRANCH}}
-- [ ] tests green (entries & expected numbers)
+- [ ] diff stays inside Allowed paths (mechanical check, finish-task §1)
+- [ ] <criterion> — proven by `<named test selector>`   # one line per criterion; bind proof, don't just say "tests green"
 - [ ] docs updated (list)
 - [ ] finish letter sent
 

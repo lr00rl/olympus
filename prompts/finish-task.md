@@ -9,8 +9,9 @@ Finishing **TASK-____**:
 ## 1. Preconditions (rules/01 §4)
 
 1. Each repo: `git fetch origin && git merge origin/{{INTEGRATION_BRANCH}}`; resolve everything on my branch (authority: contract > plan/pantheon > their files > comments; cross-ownership → letter first).
-2. Full tests `{{TEST_COMMANDS}}` — report **real numbers**.
-3. **Acks**: touching contract / others' exclusive / shared files / shared resources / auth / someone's authority area? Confirm their `[ack]` is on record — missing → send/chase the letter, park this task, **switch tasks and keep looping**.
+2. **Boundary check** (mechanical): `git diff --name-only $(git merge-base origin/{{INTEGRATION_BRANCH}} HEAD)..HEAD` — every file must match the task's Allowed paths. Out-of-bounds files → stop: either move the change to its own task, or record the boundary amendment in the task log (and letter the owner if it crosses ownership).
+3. Full tests `{{TEST_COMMANDS}}` — report **real numbers**; DoD criteria are proven by their **named tests**, not by "suite green".
+4. **Acks**: touching contract / others' exclusive / shared files / shared resources / auth / someone's authority area? Confirm their `[ack]` is on record — missing → send/chase the letter, park this task, **switch tasks and keep looping**.
 
 ## 2. Merge (owner's hands; multi-repo in {{RELEASE_ORDER}} order)
 
