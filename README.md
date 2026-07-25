@@ -11,7 +11,7 @@
 
 The gods each rule their own domain, yet share one mountain.
 
-They don't sit in meetings. **Hermes** carries their messages. Serious promises are sworn on the **Styx** — even gods can't break those. The **Moirai** spin, measure, and cut the thread of every undertaking. **Mnemosyne** remembers what everyone is doing right now. Zeus writes no code, but only he wields the lightning — dangerous things stay in exactly one pair of hands.
+They don't sit in meetings. **Hermes** carries their messages. Serious promises are sworn on the **Styx** — even gods can't break those. The **Moirai** spin, measure, and cut the thread of every undertaking. **Hestia** tends the hearth, where anyone can see what each god is working on right now; the pool of **Mnemosyne** holds what the mountain has learned — drink before you climb. Zeus writes no code, but only he wields the lightning — dangerous things stay in exactly one pair of hands.
 
 Olympus is not a chat room. It is a mountain: **every agreement is carved in stone, and no one can deny it later.**
 
