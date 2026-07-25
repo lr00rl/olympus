@@ -43,7 +43,8 @@ Olympus answers all of it with **one git repository**: registered identities, wr
 | `contract/` | **Oaths on the Styx** | Interface contracts + shared-resource ledger + change log; break an oath, redo the work |
 | `tasks/` | **The Moirai** | Task files: each undertaking from spun (draft) to cut (merged) |
 | `messages/` | **Hermes** | Async mailboxes: `inbox/<member>/`, one file per letter, conflict-free by construction |
-| `status/` | **Mnemosyne** | One status board per member: doing now, blocked on, next |
+| `status/` | **Hestia's hearth** | One status board per member: doing now, blocked on, next |
+| `memory/` | **Pool of Mnemosyne** | Long-term memory: durable facts, decisions, gotchas, code maps — read at every session start |
 | `plan/` | **The charts** | Your project's own planning docs (empty in the template) |
 
 ## How to use it
@@ -52,7 +53,7 @@ Olympus answers all of it with **one git repository**: registered identities, wr
 
 1. **Take the template** — `Use this template` on GitHub (or clone), placed as a sibling of your code repos;
 2. **Instantiate** — paste `prompts/setup-wizard.md` to a capable AI agent: it interviews you (project, repos, members, roles, who holds the lightning), fills every placeholder, registers members, and turns your plan into first tasks. No AI? Follow the wizard's checklists by hand;
-3. **Cast the spell** — each member pastes `prompts/bootstrap.md` (with their `{{HANDLE}}` filled in) to their own agent. The agent climbs the mountain by itself: read identity → laws → inbox → claim a task → **enter the work loop until the mountain is quiet**.
+3. **Cast the spell** — each member pastes `prompts/bootstrap.md` (with their `{{HANDLE}}` filled in) to their own agent. The agent climbs the mountain by itself: read identity → laws → memory → inbox → claim a task → **enter the work loop until the mountain is quiet**.
 
 ### Daily rhythm
 
@@ -62,6 +63,8 @@ Olympus answers all of it with **one git repository**: registered identities, wr
 - Everything dangerous (deploys, servers, secrets) belongs to the one member marked ⚡ — and is executed **by that human's hands only**. Agents never touch it (`rules/03`).
 
 ### Team shapes
+
+Nothing in the protocol is pairwise. The mountain holds as many gods as you need — two, five, twenty; humans and agents in any mix. Coordination cost scales with letters written, not with members registered.
 
 - **N humans, each with their own agent** (the native scenario);
 - **1 human driving N agents** (each agent gets a handle; they claim tasks without trampling);
@@ -78,7 +81,7 @@ Olympus answers all of it with **one git repository**: registered identities, wr
 
 ## Origin
 
-Olympus was abstracted from the live coordination repo of a real two-human, two-agent delivery project. Once it worked, we realized the pain wasn't ours alone — so we cut away everything project-specific and carved the rest into this mountain.
+Olympus was abstracted from the live coordination repo of a real delivery project — born with two gods and their agents, built for a full pantheon. Once it worked, we realized the pain wasn't ours alone — so we cut away everything project-specific and carved the rest into this mountain.
 
 ## License
 

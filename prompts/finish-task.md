@@ -26,7 +26,8 @@ git push origin {{INTEGRATION_BRANCH}} && git push origin feat/<handle>-task____
 
 1. Task file → `merged`; record: scope, conflicts & resolutions, test numbers, docs touched, leftovers ("none" is a valid entry — say it).
 2. Status board: move to recent, update next.
-3. Finish letter to affected members:
+3. **Harvest memory**: did this task teach a durable fact (gotcha / decision-why / architecture / map)? Add or update a `memory/` note + `INDEX.md` line — or consciously note there's nothing. (`memory/README.md`)
+4. Finish letter to affected members:
 
 ```markdown
 ---
@@ -40,7 +41,7 @@ TASK-____ <title> merged into {{INTEGRATION_BRANCH}}.
 - conflicts: <files + whose semantics | none> · docs: <list> · leftovers: <or none>
 ```
 
-4. `[<handle>] task: TASK-____ merged` → push.
+5. `[<handle>] task: TASK-____ merged` → push.
 
 ## 4. Loop back
 

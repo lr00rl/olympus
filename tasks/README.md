@@ -11,7 +11,13 @@ draft → ready → in_progress → done → merged
                   blocked          any state → cancelled (with reason)
 ```
 
-## Index (maintain by hand; the wizard seeds the first batch)
+## Splitting rule
+
+Split any task that (a) waits on someone else's unmerged shared-resource claim, or (b) exceeds roughly a day of work. Field data: small slices merge in hours; monoliths collect review rounds and outlive every sibling.
+
+## Index
+
+**The files are the truth** — list them any time with `grep -H "^status:" TASK-*.md | sort`. The hand-maintained table below is optional and rots fast; trust the grep, not the table.
 
 | TASK | Title | Owner | State | Source |
 |---|---|---|---|---|

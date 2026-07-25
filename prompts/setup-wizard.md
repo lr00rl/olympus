@@ -25,7 +25,8 @@ You are the Olympus setup wizard. The user just created this repo from the templ
 4. `rules/03`: adapt the danger table to the stack (widen, never narrow);
 5. `contract/shared-resources.md`: sections per interview item 6;
 6. Move plan docs into `plan/` (or register their external location in `plan/README.md`);
-7. Self-check: `grep -r "{{"` → empty; `grep -ri example` → only this wizard and the tasks example (Phase 4 removes it).
+7. Seed `memory/notes/` with obvious durable facts from the interview (repo maps, env names — never secrets); keep `INDEX.md` in sync;
+8. Self-check: `grep -r "{{"` → empty; `grep -ri example` → only this wizard and the tasks example (Phase 4 removes it).
 
 ## Phase 3 · Confirm the rulings
 

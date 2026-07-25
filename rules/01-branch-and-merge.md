@@ -27,6 +27,7 @@ git checkout -b feat/<handle>-task<NNNN>-<slug> origin/{{INTEGRATION_BRANCH}}
 - Always branch from the **fresh remote integration tip** — never from stale local branches or someone's feature branch.
 - Need someone's unmerged work? Branch from integration anyway, then merge their branch (§6) and record the dependency in both task files.
 - Rework returns to the original branch; never open a second branch for the same task.
+- **Queued-resource dependencies**: if your `contract/shared-resources.md` claim builds on earlier *unmerged* numbers, don't develop on top of them in parallel — split the task so the dependent slice branches after its predecessors merge, or negotiate an earlier slot. Budget for exactly one final rebase (rules/02 §3.5); the field cost of ignoring this was four review rounds on a single task.
 
 ## 3. Push / pull rhythm
 
