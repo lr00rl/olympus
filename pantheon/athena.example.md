@@ -2,7 +2,11 @@
 handle: athena.example
 name: (example member — delete during setup)
 epithet: Athena, weaver of strategy
+principal: <the human accountable for this seat>
+runtime: <agent CLI used for this seat>
+share: ~30%
 roles: [developer, reviewer]
+gated_by: [zeus.example]      # security-sensitive scopes need zeus's ack even in my paths
 ops_owner: false
 contract_steward: false
 integrator: false

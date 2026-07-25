@@ -2,7 +2,11 @@
 handle: zeus.example
 name: (example member — delete during setup)
 epithet: Zeus, bearer of lightning
-roles: [integrator, ops, contract_steward, arbiter, developer]
+principal: self (the human operator)
+runtime: human + an agent CLI (the agent drafts; rulings and dangerous ops are the human's)
+share: ~10% hands-on, 100% gating
+roles: [integrator, orchestrator, ops, contract_steward, arbiter, developer]
+gated_by: []
 ops_owner: true
 contract_steward: true
 integrator: true

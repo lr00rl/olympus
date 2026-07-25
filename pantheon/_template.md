@@ -2,7 +2,11 @@
 handle: <lowercase, e.g. hermes>
 name: <optional real name / callsign>
 epithet: <optional, for fun>
+principal: <the human accountable for this seat; "self" if a human works this seat directly>
+runtime: <what does the typing: "Claude Code" | "Codex CLI" | "Kimi CLI" | "human only" | …>
+share: <rough expected share of hands-on work, e.g. 30% — routing guidance, not a quota>
 roles: [developer]            # see README role vocabulary
+gated_by: []                  # handles whose [ack] my merges need regardless of file ownership
 ops_owner: false              # ideally exactly one true on the whole mountain
 contract_steward: false
 integrator: false

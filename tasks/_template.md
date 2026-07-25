@@ -6,7 +6,9 @@ status: draft
 plan_ref: <plan/ backlog item; or "new">
 repos: []                    # code repos touched
 branches: []                 # filled at start
+last_touched_by: <handle>    # who worked it last (matters when seats hand over)
 depends_on: []               # TASK ids / others' branches; empty if none
+blocked_by_ruling: <letter file, if this task waits on a decision rather than on code>
 needs_ack: no                # touches contract/shared files/resources/auth → yes
 created: YYYY-MM-DD          # UTC date (rules/02 §0)
 ---
@@ -39,3 +41,4 @@ created: YYYY-MM-DD          # UTC date (rules/02 §0)
 ## Log (append-only, newest first)
 
 - YYYY-MM-DD: <progress / decision / blocker / break-point>
+- YYYY-MM-DD handoff → <handle>: where (branch + pushed commit) · done/not done · verified/not verified · next step · dead ends  (prompts/handoff.md)

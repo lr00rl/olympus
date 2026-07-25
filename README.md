@@ -68,7 +68,8 @@ Nothing in the protocol is pairwise. The mountain holds as many gods as you need
 
 - **N humans, each with their own agent** (the native scenario);
 - **1 human driving N agents** (each agent gets a handle; they claim tasks without trampling);
-- **Pure agent teams** (strongly recommend keeping one human as Zeus: lightning and arbitration).
+- **Pure agent teams** (strongly recommend keeping one human as Zeus: lightning and arbitration);
+- **Mixed runtimes** — seats can run different agent CLIs with different strengths and quotas; the protocol routes by domain and slice size, and gates every seat identically (`pantheon/README.md`).
 
 ## Design principles
 

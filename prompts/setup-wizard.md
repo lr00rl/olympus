@@ -11,7 +11,7 @@ You are the Olympus setup wizard. The user just created this repo from the templ
 1. Project name; one-line description.
 2. Code repos (names + paths); siblings of this repo?
 3. Integration branch name; any legacy branches to merge or retire?
-4. Members: handle, domain, extra roles (integrator / contract steward / arbiter). **Who holds the lightning — sole ops owner for deploys, servers, secrets?** — ideally exactly one.
+4. Members (seats): handle, domain, extra roles (integrator / orchestrator / contract steward / arbiter), **principal** (accountable human), **runtime** (which agent CLI or "human only"), rough **share** of the work, and any cross-cutting `gated_by` gate. **Who holds the lightning — sole ops owner for deploys, servers, secrets?** — ideally exactly one.
 5. Test commands per repo; multi-repo release order.
 6. Shared resources needing a claim ledger (DB migration numbers / enum literals / ports / event names / other).
 7. Existing plan docs (paste or path) — optional; Phase 4 skips without them.
@@ -26,7 +26,7 @@ You are the Olympus setup wizard. The user just created this repo from the templ
 5. `contract/shared-resources.md`: sections per interview item 6;
 6. Move plan docs into `plan/` (or register their external location in `plan/README.md`);
 7. Seed `memory/notes/`: one `map-<repo>` note per code repo (entry points, key dirs, test command) and one `decision-plan-digest` (≤30 lines) so working sessions read the digest instead of the plan docs; env facts as names only — never secrets; keep `INDEX.md` in sync;
-8. Self-check: `grep -r "{{"` → empty; `grep -ri example` → only this wizard and the tasks example (Phase 4 removes it).
+8. Self-check: no **project** placeholder survives outside this wizard — `grep -rE "\{\{(PROJECT_NAME|CODE_REPOS|INTEGRATION_BRANCH|TEST_COMMANDS|RELEASE_ORDER)\}\}" . --include="*.md" | grep -v setup-wizard` → empty. `{{HANDLE}}` **must remain** in `prompts/bootstrap.md`, `prompts/reanchor.md`, and prose that explains them: it is filled in at paste time, not at setup; `grep -ri example` → only this wizard and the tasks example (Phase 4 removes it).
 
 ## Phase 3 · Confirm the rulings
 
@@ -41,4 +41,4 @@ Read back for explicit confirmation: integration-branch discipline · the ops-ow
 
 ## Wrap up
 
-Summary (members, first tasks, remaining human to-dos: share the clone URL, first release…) → **leave no template residue**: `*.example.*` deleted, `grep -r "{{"` empty — from here on, working agents never open this wizard → commit `[setup] chore: instantiate Olympus` → **push only with the user's confirmation** → remind every member: paste `prompts/bootstrap.md` (with their handle) to their agent and start the first loop.
+Summary (members, first tasks, remaining human to-dos: share the clone URL, first release…) → **land it on this repo's default branch**: Olympus is not a code repo and has no integration branch, so an instantiation parked on a side branch or in a worktree leaves every arriving member with an empty mountain → **leave no template residue**: `*.example.*` deleted, `grep -r "{{"` empty — from here on, working agents never open this wizard → commit `[setup] chore: instantiate Olympus` → **push only with the user's confirmation** → remind every member: paste `prompts/bootstrap.md` (with their handle) to their agent and start the first loop.

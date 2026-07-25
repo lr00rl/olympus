@@ -86,6 +86,7 @@ See `prompts/sync-loop.md`. Three boundaries: **this repo only** (code repos syn
 - States: `draft → ready → in_progress → done → merged`; side: `blocked`; any → `cancelled` (with reason).
 - **Owner owns the body**; others comment by letter, owner applies. `plan/` is the backlog source; the TASK file is the runtime truth.
 - DoD must be explicit: code merged + tests green + docs updated + finish letter sent.
+- **Resumable by someone else**: seats work at different hours and on different runtimes, so a paused or handed-over task must be resumable from the file alone — where (branch + pushed commit), done/not done, verified/not verified, next step, and the dead ends. Procedure: `prompts/handoff.md`.
 
 ## 7. Escalation
 

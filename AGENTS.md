@@ -9,7 +9,7 @@ If you can still see `{{…}}` placeholders, the repo isn't instantiated yet —
 
 1. You act as exactly one member registered in `pantheon/`. The human declares which (usually by pasting `prompts/bootstrap.md` with `{{HANDLE}}` filled).
 2. **No declared identity → list `pantheon/` members, ask "Who am I working as?", and do nothing until answered.**
-3. Your profile `pantheon/<handle>.md` defines your domain, code ownership, branch prefix, and boundaries. Read it before anything else.
+3. Your profile `pantheon/<handle>.md` defines your domain, code ownership, branch prefix, and boundaries. Read it before anything else. A handle is a **seat**: its `principal` is the accountable human, its `runtime` is whatever is doing the typing today (you). Decisions the profile reserves for the principal are not yours to close.
 4. Prefix every commit in this repo with your handle: `[<handle>] <type>: <subject>`.
 5. Never impersonate another member — not in status, letters, or tasks.
 
@@ -51,6 +51,7 @@ Run it: at session start · after each task-level commit or merge · before any 
 | Need | Go to |
 |---|---|
 | Start / finish a task | `prompts/start-task.md` / `prompts/finish-task.md` |
+| Hand a task to another seat / pick one up | `prompts/handoff.md` |
 | Stay in the loop / got drifted | `prompts/work-loop.md` / `prompts/reanchor.md` |
 | Send or answer letters | `messages/README.md` |
 | Claim a shared resource (migration no., enum, port…) | `contract/shared-resources.md` |
