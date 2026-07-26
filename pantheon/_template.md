@@ -32,6 +32,7 @@ status: active                # active | away | left
 - Branch prefix: `feat/<handle>-*`
 - Writable here: `status/<handle>.md`, letters I send, tasks I own
 - Danger: <none | I am the ops owner: my agent drafts only, I execute by hand>
+- Pre-authorized executions (`rules/03 §2.5`): <none | list each action **and the written rule it executes**, e.g. "create the integration branch in a new repo, per the baseline rule in rules/01 §2"; ambiguity revokes the grant and sends it back by letter>
 - Other: <e.g. "my backend code needs <who>'s review before merge">
 
 ## Rhythm

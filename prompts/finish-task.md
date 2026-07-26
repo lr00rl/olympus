@@ -26,7 +26,7 @@ git push origin {{INTEGRATION_BRANCH}} && git push origin feat/<handle>-task____
 ## 3. Communicate (one Olympus commit+push)
 
 1. Task file → `merged`; record: scope, conflicts & resolutions, test numbers, docs touched, leftovers ("none" is a valid entry — say it).
-2. Status board: move to recent, update next.
+2. Status board: move to recent, update next. Sharing a machine? Remove your worktree too — `git -C <repo> worktree remove ../.wt/<handle>-<repo>` (`rules/05 §3`).
 3. **Harvest memory** — exactly one op, preferred in this order: **NOOP** (default: most tasks teach nothing durable) / **UPDATE** an existing note / **SUPERSEDE** a now-wrong note / **ADD** (new fact ≤30 lines + index line, `keywords:` carrying paths & verbatim errors). Search `INDEX.md` before adding. (`memory/README.md`)
 4. Finish letter to affected members:
 

@@ -75,6 +75,9 @@ When a merge needs an ack, the exchange is a numbered review, not a one-shot:
 1. After sending `needs_reply: yes` — **don't wait**: pick a `ready`, dependency-free task (prefer your own domain, prefer no shared files).
 2. Past the recipient's buffer (default **24h**): append `> [no-response] proceeding with TASK-xxxx; request stays open`.
 3. **Exceptions that must wait for an ack** (no workarounds): contract-change merges · merges touching others' exclusive areas or shared resources · any dangerous-op request. Blocked on these? Switch tasks; never degrade around them.
+4. **The backlog must be able to absorb you** (the supply side of §1–3, and the Orchestrator's standing duty): *every active seat must have at least one claimable, dependency-free task at all times.* A seat whose whole queue is `draft` or `blocked` has no legal move except to stop — so an empty queue is an Orchestrator **P0**, not the seat's problem. Consequences: a task with `depends_on: []` and no ruling gate is created **`ready`, not `draft`** unless there is a stated reason; and when several seats park on the same person at once, that is one systemic signal, not N independent stops — the Orchestrator answers it with **one consolidated decision sheet carrying a recommendation per item**, not a trickle of round-trips.
+
+> Field note: in one instantiation every seat stopped legally within the same hour. Two of them were genuinely waiting on the principal; the third — holding the largest share of the work — had two dependency-free tasks sitting in `draft`, unclaimable. The protocol worked exactly as written; the backlog had simply gone empty underneath it.
 
 ## 5. 15-minute sync loop (optional)
 
@@ -87,6 +90,9 @@ See `prompts/sync-loop.md`. Three boundaries: **this repo only** (code repos syn
 - **Owner owns the body**; others comment by letter, owner applies. `plan/` is the backlog source; the TASK file is the runtime truth.
 - DoD must be explicit: code merged + tests green + docs updated + finish letter sent.
 - **Resumable by someone else**: seats work at different hours and on different runtimes, so a paused or handed-over task must be resumable from the file alone — where (branch + pushed commit), done/not done, verified/not verified, next step, and the dead ends. Procedure: `prompts/handoff.md`.
+- **A task's first slice must stand alone** — precondition for `ready`. Every task states, in its *First slice* section, the first deliverable that depends on nothing: no ruling, no sibling task, no resource someone else must create. If nothing can start until X lands, the task is mis-sized: **split it**, so the independent part is its own claimable task instead of parking a seat behind X. Same rule for `depends_on:` — name the *specific* items that gate you (`TASK-0042 items 1–4`), never a whole umbrella task, and say which phase each gates.
+
+> Field note: one instantiation made this mistake twice in a day, in two different shapes — first a `depends_on` that pointed at an entire review sweep when only four of its items mattered, then a task whose first half needed nothing but was read as blocked because the body was never sliced. Both times the highest-share seat sat idle. Narrowing the dependency fixed the symptom; only slicing the body fixed the cause.
 
 ## 7. Escalation
 

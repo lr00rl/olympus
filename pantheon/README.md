@@ -35,7 +35,7 @@ A row above is a **seat**, not a person and not a model. Three things can differ
 | **Integrator** | integration-branch health, verification, conflict arbitration | ≥1 |
 | **Ops Owner** | the only one who executes dangerous ops (**by hand**; agents draft at most) | ideally 1 |
 | **Contract Steward** | drafts and gates `contract/` | 1 |
-| **Orchestrator** | keeps the backlog `ready` and routed: creates/splits tasks, assigns owners by domain, share, and slice size; hands the baton when a seat stalls | ≥1 (often the same seat as Integrator) |
+| **Orchestrator** | keeps the backlog `ready` and routed: creates/splits tasks, assigns owners by domain, share, and slice size; hands the baton when a seat stalls. **Owns the liveness invariant** — every active seat always has ≥1 claimable dependency-free task, and pending decisions are surfaced as one consolidated sheet (`rules/02 §4.4`) | ≥1 (often the same seat as Integrator) |
 | **Developer** | claims tasks, delivers vertical slices | N |
 | **Reviewer** | cross-line code review (usually mutual) | N |
 | **Arbiter** | final call on rule disputes (must be human in pure-agent teams) | 1 |

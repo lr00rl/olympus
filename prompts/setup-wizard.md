@@ -10,7 +10,7 @@ You are the Olympus setup wizard. The user just created this repo from the templ
 
 1. Project name; one-line description.
 2. Code repos (names + paths); siblings of this repo?
-3. Integration branch name; any legacy branches to merge or retire?
+3. Integration branch name; **its baseline rule** (branch it from each repo's `main`, or from some existing release line? — state the rule once, it applies to every repo); any legacy branches to merge or retire? Also: **will seats share one machine and one set of clones?** (if yes, `rules/05` applies).
 4. Members (seats): handle, domain, extra roles (integrator / orchestrator / contract steward / arbiter), **principal** (accountable human), **runtime** (which agent CLI or "human only"), rough **share** of the work, and any cross-cutting `gated_by` gate. **Who holds the lightning — sole ops owner for deploys, servers, secrets?** — ideally exactly one.
 5. Test commands per repo; multi-repo release order.
 6. Shared resources needing a claim ledger (DB migration numbers / enum literals / ports / event names / other).
@@ -30,7 +30,24 @@ You are the Olympus setup wizard. The user just created this repo from the templ
 
 ## Phase 3 · Confirm the rulings
 
-Read back for explicit confirmation: integration-branch discipline · the ops-owner assignment and the draft-only clause · what requires acks · ownership overlaps (two exclusive claims on one file = config error — fix now). Then write changelog row #1: "The mountain stands; laws in force", listing co-signers.
+Read back for explicit confirmation: integration-branch discipline **and its baseline rule** · the ops-owner assignment and the draft-only clause · any **pre-authorized executions** granted to a seat (`rules/03 §2.5` — name them in the profile, or grant none) · what requires acks · ownership overlaps (two exclusive claims on one file = config error — fix now). Then write changelog row #1: "The mountain stands; laws in force", listing co-signers.
+
+**Infrastructure prerequisite — do not defer this.** The integration branch must exist in **every**
+code repo from Phase 1 item 2, not only the ones that today's first tasks touch. A repo without it
+has no legal place to branch from (`rules/01 §2`), so the first task that reaches it stalls — and
+the seat holding the largest share is usually the one that finds out. Creating branches is the ops
+owner's hand unless pre-authorized (§2.5); either way, verify before declaring setup complete:
+
+```bash
+for r in <every code repo>; do
+  printf '%-28s ' "$r"
+  git -C "$r" ls-remote --heads origin {{INTEGRATION_BRANCH}} | grep -q . && echo OK || echo MISSING
+done
+```
+
+> Field note: one instantiation baselined only the four repos named in the first tasks. Six were
+> missing, one of them needed by a dependency-free task — which therefore could not be promoted,
+> which idled the 60%-share seat for a full cycle.
 
 ## Phase 4 · Plan → tasks (if plan docs exist)
 

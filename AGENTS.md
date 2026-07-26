@@ -35,7 +35,7 @@ Run it: at session start · after each task-level commit or merge · before any 
 
 1. Touch the mountain (§2).
 2. Read **exactly** these, in order — a whitelist, not a starting point for crawling: my profile → `memory/INDEX.md` (drink from the pool) → all `status/` boards → my open letters → my tasks (`ready`/`in_progress`/`blocked`) → `contract/CHANGELOG.md` tail.
-   **Don't bulk-read `rules/` at startup** — the Five Laws are the digest; open the specific rule at the moment of its action (merging → rules/01 §4–5 · review → rules/02 §3.5 · danger → rules/03). The task prompts embed the procedures; templates (`_template.md`) are opened only when instantiating one.
+   **Don't bulk-read `rules/` at startup** — the Five Laws are the digest; open the specific rule at the moment of its action (merging → rules/01 §4–5 · review → rules/02 §3.5 · danger → rules/03 · about to edit code while another seat shares this machine → rules/05). The task prompts embed the procedures; templates (`_template.md`) are opened only when instantiating one.
 3. Report to the human: current task & branch · inbox digest · anything awaiting my ack · plan for this loop.
 4. On confirmation, enter the **work loop** (`prompts/work-loop.md`). Do not finish one item and stop.
 

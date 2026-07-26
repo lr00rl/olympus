@@ -17,6 +17,13 @@ created: YYYY-MM-DD          # UTC date (rules/02 §0)
 
 <what, why, the observable result>
 
+## First slice (fill before `ready` — rules/02 §6)
+
+<the first deliverable that depends on **nothing**: no ruling, no other task, no resource someone
+ else must create. This is what the owner starts today.
+ If the honest answer is "nothing can start until X lands", the task is mis-sized — split it so
+ the independent part becomes its own task, rather than parking a whole seat behind X.>
+
 ## Scope & boundaries
 
 - In:
