@@ -69,7 +69,8 @@ Nothing in the protocol is pairwise. The mountain holds as many gods as you need
 - **N humans, each with their own agent** (the native scenario);
 - **1 human driving N agents** (each agent gets a handle; they claim tasks without trampling);
 - **Pure agent teams** (strongly recommend keeping one human as Zeus: lightning and arbitration);
-- **Mixed runtimes** — seats can run different agent CLIs with different strengths and quotas; the protocol routes by domain and slice size, and gates every seat identically (`pantheon/README.md`).
+- **Mixed runtimes** — seats can run different agent CLIs with different strengths and quotas; the protocol routes by domain and slice size, and gates every seat identically (`pantheon/README.md`);
+- **Several agents on one machine** — the common local setup: seats share one set of clones, so code work happens in per-seat worktrees while the Olympus repo stays deliberately shared (`rules/05`).
 
 ## Design principles
 
