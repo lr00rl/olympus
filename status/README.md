@@ -1,4 +1,4 @@
-# status/ · Mnemosyne (status boards)
+# status/ · Hestia's hearth (status boards)
 
 One `status/<handle>.md` per member (wizard creates from `_template.md`), **writable by that member only**.
 

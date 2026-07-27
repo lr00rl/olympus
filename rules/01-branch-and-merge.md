@@ -1,6 +1,6 @@
 # rules/01 · Branching, checkout & merging
 
-Applies to all code repos `{{CODE_REPOS}}`. The Olympus repo itself commits straight to `main` (`AGENTS.md §4`).
+Applies to all code repos `{{CODE_REPOS}}`. The Olympus repo itself commits straight to its default branch (`AGENTS.md §4`).
 
 ---
 
@@ -28,7 +28,7 @@ git checkout -b feat/<handle>-task<NNNN>-<slug> origin/{{INTEGRATION_BRANCH}}
 - **Sharing a machine with another seat? Do this in your own worktree, not the shared clone** (`rules/05 §1`). The command above assumes the working copy is yours alone.
 - Need someone's unmerged work? Branch from integration anyway, then merge their branch (§6) and record the dependency in both task files.
 - Rework returns to the original branch; never open a second branch for the same task.
-- **Queued-resource dependencies**: if your `contract/shared-resources.md` claim builds on earlier *unmerged* numbers, don't develop on top of them in parallel — split the task so the dependent slice branches after its predecessors merge, or negotiate an earlier slot. Budget for exactly one final rebase (rules/02 §3.5); the field cost of ignoring this was four review rounds on a single task.
+- **Queued-resource dependencies**: if your `contract/shared-resources.md` claim builds on earlier *unmerged* numbers, don't develop on top of them in parallel — split the task so the dependent slice branches after its predecessors merge, or negotiate an earlier slot. Budget for exactly one final integration sync (rules/02 §3.5 "sync economics"); the field cost of ignoring this was four review rounds on a single task.
 
 ## 3. Push / pull rhythm
 
@@ -48,6 +48,8 @@ git checkout -b feat/<handle>-task<NNNN>-<slug> origin/{{INTEGRATION_BRANCH}}
    - resources in `contract/shared-resources.md` → per the ledger
    - auth / permission / security semantics, and any scope named by your profile's `gated_by` → that gatekeeper (applies **inside** your exclusive paths too)
    - code you wrote inside someone else's authority area → that owner's review
+
+   **Same-principal shortcut**: when the requesting seat and the required acker share one `principal`, the ack holds by construction — record a one-line `[ack]` where it is due and move on; no letter round-trip. (Kills the "writing letters to yourself" ceremony in small teams without weakening the record.)
 
 ## 5. The merge (task owner executes; multi-repo in {{RELEASE_ORDER}} order)
 

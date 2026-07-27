@@ -33,7 +33,7 @@ git push origin {{INTEGRATION_BRANCH}} && git push origin feat/<handle>-task____
 ```markdown
 ---
 from: <handle> / to: <handle> / date: <date -u, YYYY-MM-DDTHH:MMZ>
-re: TASK-____ / needs_reply: no|yes / status: open
+re: TASK-____ / needs: none|review / status: open
 ---
 TASK-____ <title> merged into {{INTEGRATION_BRANCH}}.
 - commits: <hash>(repo)…  · tests: <real numbers>

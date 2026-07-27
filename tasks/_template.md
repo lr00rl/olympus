@@ -10,6 +10,8 @@ last_touched_by: <handle>    # who worked it last (matters when seats hand over)
 depends_on: []               # TASK ids / others' branches; empty if none
 blocked_by_ruling: <letter file, if this task waits on a decision rather than on code>
 needs_ack: no                # touches contract/shared files/resources/auth → yes
+loop_attempts: 0             # consecutive same-failure count; survives sessions; 3 ⇒ blocked (work-loop §2.6)
+last_failure: ""             # the failure signature being retried (test name / verbatim error string)
 created: YYYY-MM-DD          # UTC date (rules/02 §0)
 ---
 

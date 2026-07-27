@@ -29,7 +29,7 @@
 3. "Sent a letter, waiting" is not a stop — switch tasks (rules/02 §4).
 4. "This task is huge" is not a stop — split it into subtasks in tasks/ and do the first one. **The Touch cadence survives inside big tasks**: however deep you are, every commit-level step ends with a Touch. If you notice you haven't touched the mountain in a long stretch — stop building, Touch, then continue.
 5. Partial work never poses as done: plan-only isn't done, half-written isn't done, untested isn't done. Interrupting? keep `in_progress`, log the break-point.
-6. Same error three times in a row → stop grinding: log findings to the task, mark `blocked`, letter, switch.
+6. Same error three times in a row → stop grinding: log findings to the task, bump `loop_attempts` in its frontmatter (the counter must survive this session — rules/02 §6), mark `blocked`, letter, switch.
 
 ## 3. Checkpoint report (end of every cycle)
 
@@ -51,3 +51,5 @@ The human may redirect at any checkpoint; **no instruction means keep looping**.
 4. The only possible step needs a human decision and no alternative task exists.
 
 A legal stop still ends with: final checkpoint + status board updated + Olympus pushed — **leave the mountain so the next session picks up seamlessly**.
+
+**Stops 2 and 4 ring a bell before going quiet**: send the Orchestrator a backlog letter (what is empty, what is parked on whom, one line per item) and fire its wake channel if one is configured (`bin/olympus wake <orchestrator>`). The mountain falling silent must itself be the event that summons the supplier — otherwise "everyone stopped legally" and "nobody refills the backlog" are the same state (rules/02 §4.4; this deadlock happened in the field).
