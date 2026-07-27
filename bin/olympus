@@ -1,0 +1,351 @@
+#!/usr/bin/env bash
+# bin/olympus — the forge. Small helpers for the Olympus protocol.
+#
+# Plain bash + git + grep; no daemon, no database; network only in notify/wake (opt-in).
+# Every command mirrors a by-hand procedure documented in the rules — hands remain
+# the reliable path (README design principle 5); this file only makes them cheaper.
+#
+#   touch <handle> [msg]   the Touch: pull, scan inbox, stage MY paths, commit, push
+#   doctor                 mechanical protocol checks; red = violation, yellow = housekeeping
+#   next <handle>          my work queue: in_progress → letters waiting on me → ready & dep-free
+#   letter <to> <slug> --needs <kind> [--re TASK-XXXX] [--from <me>] [--broadcast]
+#   join <handle>          profile skeleton + inbox + status board for a new seat
+#   bootstrap <handle>     print the bootstrap prompt (use: claude -p "$(bin/olympus bootstrap zeus)")
+#   heartbeat <handle>     unattended inbox pass; cheap no-op when nothing is pending
+#   wake <handle>          fire a seat's wake channel per olympus.conf
+#   notify <title> [body]  push a message to the humans (ntfy / Lark / stdout fallback)
+#
+# Config (optional, shell-sourced): olympus.conf at the repo root — see bin/samples/.
+set -eu
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "olympus: run inside the Olympus repo" >&2; exit 1; }
+cd "$ROOT"
+[ -f "$ROOT/olympus.conf" ] && . "$ROOT/olympus.conf"
+
+# ---------- shared helpers ----------
+
+utc_iso()  { date -u +%Y-%m-%dT%H:%MZ; }
+utc_file() { echo "$(date -u +%Y%m%d-%H%M)Z"; }
+die()      { echo "olympus: $*" >&2; exit 1; }
+
+need_handle() {
+  h="${1:-${OLYMPUS_HANDLE:-}}"
+  [ -n "$h" ] || die "handle required (arg or OLYMPUS_HANDLE)"
+  [ -f "pantheon/$h.md" ] || die "no such seat: pantheon/$h.md"
+}
+
+conf_key() { printf '%s' "$1" | sed 's/[^a-zA-Z0-9]/_/g'; }
+
+# stage exactly the paths a seat owns: its board, letters it touched, tasks it owns
+stage_mine() {
+  h="$1"
+  [ -f "status/$h.md" ] && git add "status/$h.md"
+  [ -d "messages/inbox/$h" ] && git add "messages/inbox/$h"
+  for f in messages/inbox/*/*-"$h"-*.md; do [ -e "$f" ] && git add "$f"; done
+  [ -d messages/archive ] && git add messages/archive
+  for t in tasks/TASK-*.md; do
+    [ -e "$t" ] || continue
+    grep -q "^owner: $h" "$t" && git add "$t"
+  done
+  return 0
+}
+
+# ---------- commands ----------
+
+cmd_touch() {
+  need_handle "${1:-}"; shift $(( $# > 0 ? 1 : 0 )) || true
+  msg="${*:-touch}"
+  # --autostash: in-flight edits (mine or another seat's on a shared clone) must not block the pull
+  git pull --rebase --autostash
+  open_letters="$(grep -l '^status: open' "messages/inbox/$h"/*.md 2>/dev/null || true)"
+  if [ -n "$open_letters" ]; then
+    echo "-- open letters for $h:"
+    for f in $open_letters; do
+      printf '   %s  (needs: %s)\n' "$f" "$(sed -n 's/^needs: *//p' "$f" | head -1)"
+    done
+  fi
+  [ -f contract/CHANGELOG.md ] && { echo "-- changelog tail:"; tail -n 3 contract/CHANGELOG.md; }
+  stage_mine "$h"
+  if git diff --cached --quiet; then
+    echo "-- nothing of mine to push"
+  else
+    git commit -m "[$h] sync: $msg"
+    git push
+  fi
+}
+
+cmd_doctor() {
+  RED=0; YEL=0
+  red() { RED=$((RED+1)); printf 'RED    %s\n' "$1"; }
+  yel() { YEL=$((YEL+1)); printf 'yellow %s\n' "$1"; }
+
+  # 1. project placeholders (outside the wizard) — an uninstantiated mountain
+  ph="$(grep -rlE '\{\{(PROJECT_NAME|CODE_REPOS|INTEGRATION_BRANCH|TEST_COMMANDS|RELEASE_ORDER)\}\}' \
+        --include='*.md' . 2>/dev/null | grep -v setup-wizard | grep -v '^\./bin/' || true)"
+  [ -n "$ph" ] && red "project placeholders survive (run prompts/setup-wizard.md): $(echo "$ph" | tr '\n' ' ')"
+
+  # 2. tasks
+  today="$(date -u +%Y%m%d)"
+  for t in tasks/TASK-*.md; do
+    [ -e "$t" ] || continue
+    case "$t" in *_template*) continue;; esac
+    st="$(sed -n 's/^status: *//p' "$t" | head -1)"
+    ow="$(sed -n 's/^owner: *//p' "$t" | head -1)"
+    case "$st" in
+      draft|ready|in_progress|done|merged|blocked|cancelled) : ;;
+      *) red "$t: illegal status '$st'";;
+    esac
+    case "$st" in in_progress|done|merged)
+      case "$ow" in ''|'<handle>') red "$t: status $st but no real owner";; esac
+    esac
+    if [ "$st" = "ready" ] && ! grep -q '^## First slice' "$t"; then
+      red "$t: ready without a First slice section (rules/02 §6)"
+    fi
+    if [ "$st" = "blocked" ] && ! sed -n 's/^blocked_by_ruling: *//p' "$t" | head -1 | grep -q .; then
+      yel "$t: blocked with empty blocked_by_ruling — name the letter or the blocker"
+    fi
+    la="$(sed -n 's/^loop_attempts: *//p' "$t" | head -1)"
+    case "$la" in
+      ''|*[!0-9]*) : ;;
+      *) [ "$la" -ge 3 ] && [ "$st" != "blocked" ] && red "$t: loop_attempts=$la but not blocked (work-loop §2.6)";;
+    esac
+  done
+
+  # 3. letters
+  for f in messages/inbox/*/*.md; do
+    [ -e "$f" ] || continue
+    st="$(sed -n 's/^status: *//p' "$f" | head -1)"
+    nd="$(sed -n 's/^needs: *//p' "$f" | head -1)"
+    if [ "$nd" = "decision" ]; then
+      grep -q '^fallback:' "$f" || red "$f: needs: decision without fallback (rules/02 §3.1)"
+      grep -q '^due:' "$f" || red "$f: needs: decision without due (rules/02 §3.1)"
+    fi
+    if [ "$st" = "open" ]; then
+      base="$(basename "$f")"; fdate="${base%%-*}"
+      case "$fdate" in
+        [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])
+          # numeric day-diff is approximate across month bounds; fine for hygiene
+          [ $((today - fdate)) -ge 2 ] && yel "$f: open past the buffer — fallback/no-response due (rules/02 §4)";;
+      esac
+    fi
+  done
+
+  # 4. inbox hygiene: ~30 answered letters → sweep to archive/
+  for d in messages/inbox/*/; do
+    [ -d "$d" ] || continue
+    n="$(grep -l '^status: answered' "$d"*.md 2>/dev/null | wc -l | tr -d ' ')"
+    [ "$n" -ge 30 ] && yel "$d: $n answered letters — git mv to messages/archive/ (rules/02 §3)"
+  done
+
+  # 5. memory index budget
+  if [ -f memory/INDEX.md ]; then
+    n="$(wc -l < memory/INDEX.md | tr -d ' ')"
+    [ "$n" -gt 50 ] && yel "memory/INDEX.md: $n lines (>50) — run a consolidation chore (memory/README.md)"
+  fi
+
+  # 6. status boards are dashboards, not journals
+  for b in status/*.md; do
+    [ -e "$b" ] || continue
+    case "$b" in *_template*|*README*) continue;; esac
+    n="$(wc -l < "$b" | tr -d ' ')"
+    [ "$n" -gt 40 ] && yel "$b: $n lines — boards balloon; recents ≤5 (rules/02 §2)"
+  done
+
+  # 7. backlog liveness (rules/02 §4.4)
+  active=0
+  for p in pantheon/*.md; do
+    case "$p" in *_template*|*README*) continue;; esac
+    grep -q '^status: active' "$p" && active=$((active+1))
+  done
+  if [ "$active" -gt 0 ]; then
+    ready_free=0
+    for t in tasks/TASK-*.md; do
+      [ -e "$t" ] || continue
+      case "$t" in *_template*) continue;; esac
+      grep -q '^status: ready' "$t" && grep -q '^depends_on: \[\]' "$t" && ready_free=$((ready_free+1))
+    done
+    [ "$ready_free" -eq 0 ] && red "backlog empty: $active active seat(s), 0 ready dependency-free tasks — Orchestrator P0 (rules/02 §4.4)"
+  fi
+
+  # 8. stale worktrees at the workspace root
+  if [ -d "$ROOT/../.wt" ]; then
+    stale="$(find "$ROOT/../.wt" -maxdepth 1 -mindepth 1 -type d -mtime +14 2>/dev/null || true)"
+    [ -n "$stale" ] && yel "stale worktrees (>14d): $(echo "$stale" | tr '\n' ' ') — cleanup is part of finishing (rules/05 §3)"
+  fi
+
+  # 9. template residue after instantiation
+  if [ -z "$ph" ]; then
+    ex="$(ls pantheon/*.example.md tasks/*.example.md 2>/dev/null || true)"
+    [ -n "$ex" ] && yel "example residue: $(echo "$ex" | tr '\n' ' ') — delete at setup (wizard wrap-up)"
+  fi
+
+  echo "----"
+  echo "doctor: $RED red, $YEL yellow"
+  [ "$RED" -eq 0 ]
+}
+
+cmd_next() {
+  need_handle "${1:-}"
+  echo "== in progress (mine)"
+  for t in tasks/TASK-*.md; do
+    [ -e "$t" ] || continue
+    grep -q '^status: in_progress' "$t" && grep -q "^owner: $h" "$t" \
+      && printf '   %s  %s\n' "$t" "$(sed -n 's/^title: *//p' "$t" | head -1)"
+  done
+  echo "== open letters for me"
+  for f in "messages/inbox/$h"/*.md; do
+    [ -e "$f" ] || continue
+    grep -q '^status: open' "$f" \
+      && printf '   %s  (needs: %s)\n' "$f" "$(sed -n 's/^needs: *//p' "$f" | head -1)"
+  done
+  echo "== ready, dependency-free (claimable)"
+  for t in tasks/TASK-*.md; do
+    [ -e "$t" ] || continue
+    case "$t" in *_template*) continue;; esac
+    grep -q '^status: ready' "$t" && grep -q '^depends_on: \[\]' "$t" \
+      && printf '   %s  %s  (owner: %s)\n' "$t" "$(sed -n 's/^title: *//p' "$t" | head -1)" "$(sed -n 's/^owner: *//p' "$t" | head -1)"
+  done
+}
+
+cmd_letter() {
+  to="${1:-}"; slug="${2:-}"; shift 2 2>/dev/null || die "usage: letter <to> <slug> --needs <kind> [--re TASK-XXXX] [--from <me>] [--broadcast]"
+  needs="none"; re="general"; from="${OLYMPUS_HANDLE:-}"; broadcast=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --needs) needs="$2"; shift 2;;
+      --re) re="$2"; shift 2;;
+      --from) from="$2"; shift 2;;
+      --broadcast) broadcast=1; shift;;
+      *) die "unknown option: $1";;
+    esac
+  done
+  [ -n "$from" ] || die "--from <handle> required (or set OLYMPUS_HANDLE)"
+  case "$needs" in none|info|review|decision|approval) : ;; *) die "needs must be none|info|review|decision|approval";; esac
+  fname="$(utc_file)-$from-$slug.md"
+  body="---
+from: $from
+to: $to
+date: $(utc_iso)
+re: $re
+needs: $needs
+status: open
+---
+<what you need, why, by when, and what stalls without it>"
+  if [ "$needs" = "decision" ]; then
+    body="$body
+
+\`\`\`yaml
+choices:
+  - id: a
+    label: <option>
+    tradeoff: <one line>
+  - id: b
+    label: <option>
+    tradeoff: <one line>
+recommendation: a
+due: $(date -u +%Y-%m-%d)T00:00Z   # set it — UTC
+fallback: a                        # or \"none\" (must wait)
+\`\`\`"
+  fi
+  if [ "$broadcast" -eq 1 ]; then
+    for d in messages/inbox/*/; do
+      [ -d "$d" ] || continue
+      printf '%s\n' "$body" > "$d$fname"
+      echo "wrote $d$fname"
+    done
+  else
+    [ -d "messages/inbox/$to" ] || die "no inbox: messages/inbox/$to"
+    printf '%s\n' "$body" > "messages/inbox/$to/$fname"
+    echo "wrote messages/inbox/$to/$fname"
+  fi
+  echo "fill the body, then commit via: bin/olympus touch $from"
+}
+
+cmd_join() {
+  h="${1:-}"; [ -n "$h" ] || die "usage: join <handle>"
+  [ -f "pantheon/$h.md" ] && die "seat exists: pantheon/$h.md"
+  sed -e "s/^handle: .*/handle: $h/" -e "s/^joined: .*/joined: $(date -u +%Y-%m-%d)/" \
+    pantheon/_template.md > "pantheon/$h.md"
+  mkdir -p "messages/inbox/$h"; : > "messages/inbox/$h/.gitkeep"
+  sed "s/<handle>/$h/" status/_template.md > "status/$h.md"
+  echo "created: pantheon/$h.md · messages/inbox/$h/ · status/$h.md"
+  echo "by hand still (pantheon/README.md §3): fill the profile · add the member-table row · role grants need the Arbiter's ack"
+  echo "then bootstrap:  claude -p \"\$(bin/olympus bootstrap $h)\""
+}
+
+cmd_bootstrap() {
+  need_handle "${1:-}"
+  # everything below the first --- of the bootstrap oracle, with the handle filled
+  awk 'f{print} /^---$/{f=1}' prompts/bootstrap.md | sed "s/{{HANDLE}}/$h/g"
+}
+
+cmd_heartbeat() {
+  need_handle "${1:-}"
+  lock="${TMPDIR:-/tmp}/olympus-heartbeat-$h.lock"
+  if [ -e "$lock" ]; then echo "heartbeat: previous run still holds $lock — skipping"; exit 0; fi
+  : > "$lock"; trap 'rm -f "$lock"' EXIT
+  git pull --rebase --autostash --quiet
+  pending="$(grep -l '^status: open' "messages/inbox/$h"/*.md 2>/dev/null || true)"
+  if [ -z "$pending" ]; then
+    echo "heartbeat: inbox quiet for $h — nothing to do"   # cheap no-op: zero agent tokens
+    exit 0
+  fi
+  if [ -n "${AGENT_CMD:-}" ]; then
+    prompt="$(cmd_bootstrap "$h")
+
+--- UNATTENDED HEARTBEAT (additions for this run only) ---
+- Work strictly through my inbox and ready queue, per rules/02 §3.2 and my profile's inbox_autonomy.
+- This run is budgeted: finish records over starting large work; end every thread with the Touch.
+- Never merge to the integration branch; never touch the danger table (rules/03); never begin work that needs a human mid-flight.
+- Whatever needs my principal: draft it in the right file, then send ONE consolidated notification at the end via: bin/olympus notify \"[$h] needs you\" \"<one line per item>\"."
+    $AGENT_CMD "$prompt"
+  else
+    echo "heartbeat: open letters for $h (no AGENT_CMD configured — reporting only):"
+    for f in $pending; do printf '   %s  (needs: %s)\n' "$f" "$(sed -n 's/^needs: *//p' "$f" | head -1)"; done
+    cmd_notify "[$h] inbox pending" "$(echo "$pending" | tr '\n' ' ')"
+  fi
+}
+
+cmd_wake() {
+  need_handle "${1:-}"
+  key="$(conf_key "$h")"
+  eval "mode=\${WAKE_${key}:-notify}"
+  case "$mode" in
+    local)
+      echo "wake: starting background heartbeat for $h"
+      nohup "$0" heartbeat "$h" >/dev/null 2>&1 & ;;
+    http*://*)
+      curl -fsS -X POST "$mode" >/dev/null && echo "wake: fired $mode" ;;
+    notify|*)
+      cmd_notify "[olympus] $h has pending work" "run: bin/olympus heartbeat $h" ;;
+  esac
+}
+
+cmd_notify() {
+  title="${1:-olympus}"; shift 2>/dev/null || true; msg="${*:-}"
+  if [ -n "${NTFY_TOPIC:-}" ]; then
+    curl -fsS -H "Title: $title" -d "$msg" "$NTFY_TOPIC" >/dev/null && echo "notified (ntfy): $title"
+  elif [ -n "${LARK_WEBHOOK:-}" ]; then
+    curl -fsS -X POST -H 'Content-Type: application/json' \
+      -d "{\"msg_type\":\"text\",\"content\":{\"text\":\"$title — $msg\"}}" "$LARK_WEBHOOK" >/dev/null \
+      && echo "notified (lark): $title"
+  else
+    echo "NOTIFY: $title — $msg"
+  fi
+}
+
+# ---------- dispatch ----------
+
+cmd="${1:-help}"; shift 2>/dev/null || true
+case "$cmd" in
+  touch)     cmd_touch "$@";;
+  doctor)    cmd_doctor "$@";;
+  next)      cmd_next "$@";;
+  letter)    cmd_letter "$@";;
+  join)      cmd_join "$@";;
+  bootstrap) cmd_bootstrap "$@";;
+  heartbeat) cmd_heartbeat "$@";;
+  wake)      cmd_wake "$@";;
+  notify)    cmd_notify "$@";;
+  help|*)    sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//';;
+esac

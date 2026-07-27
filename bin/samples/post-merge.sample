@@ -1,0 +1,14 @@
+#!/bin/sh
+# .git/hooks/post-merge for the OLYMPUS repo (same-machine teams).
+# The moment a `git pull` lands new letters, wake each recipient seat — the letter itself
+# is the trigger. Install: cp bin/samples/post-merge.sample .git/hooks/post-merge && chmod +x .git/hooks/post-merge
+# Safe to fire repeatedly: heartbeat holds a lock and no-ops on a quiet inbox.
+
+changed=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD -- messages/inbox/ 2>/dev/null \
+          | cut -d/ -f3 | sort -u)
+[ -n "$changed" ] || exit 0
+for seat in $changed; do
+  [ -f "pantheon/$seat.md" ] || continue
+  nohup bin/olympus wake "$seat" >/dev/null 2>&1 &
+done
+exit 0

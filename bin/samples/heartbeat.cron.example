@@ -1,0 +1,7 @@
+# crontab -e  (Linux; macOS users prefer the launchd sample — cron survives less reliably there)
+# One line per active seat. Quiet inboxes cost zero agent tokens.
+# Stagger seats a few minutes apart so they don't contend for the repo lock.
+
+# m   h     dom mon dow   command
+17  */2  *   *   *   cd /path/to/olympus-repo && bin/olympus heartbeat zeus   >> ~/.olympus-heartbeat.log 2>&1
+23  */2  *   *   *   cd /path/to/olympus-repo && bin/olympus heartbeat athena >> ~/.olympus-heartbeat.log 2>&1
