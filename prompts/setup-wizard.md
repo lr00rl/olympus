@@ -20,13 +20,13 @@ You are the Olympus setup wizard. The user just created this repo from the templ
 ## Phase 2 · Instantiate (execute item by item, show diffs)
 
 1. Replace placeholders repo-wide: `{{PROJECT_NAME}}` `{{CODE_REPOS}}` `{{INTEGRATION_BRANCH}}` `{{TEST_COMMANDS}}` `{{RELEASE_ORDER}}` (in AGENTS.md, rules/, prompts/);
-2. `pantheon/`: one profile per member from `_template.md`; update the member table; **delete `*.example.md`**;
-3. Create `messages/inbox/<handle>/.gitkeep` and `status/<handle>.md` per member;
+2. `pantheon/`: one profile per member — `bin/olympus join <handle>` creates the skeleton, inbox, and status board in one step (then fill the profile, including `inbox_autonomy`); update the member table; **delete `*.example.md`**;
+3. (covered by `join` above; by hand: `messages/inbox/<handle>/.gitkeep` and `status/<handle>.md` per member);
 4. `rules/03`: adapt the danger table to the stack (widen, never narrow);
 5. `contract/shared-resources.md`: sections per interview item 6;
 6. Move plan docs into `plan/` (or register their external location in `plan/README.md`);
 7. Seed `memory/notes/`: one `map-<repo>` note per code repo (entry points, key dirs, test command) and one `decision-plan-digest` (≤30 lines) so working sessions read the digest instead of the plan docs; env facts as names only — never secrets; keep `INDEX.md` in sync;
-8. Self-check: no **project** placeholder survives outside this wizard — `grep -rE "\{\{(PROJECT_NAME|CODE_REPOS|INTEGRATION_BRANCH|TEST_COMMANDS|RELEASE_ORDER)\}\}" . --include="*.md" | grep -v setup-wizard` → empty. `{{HANDLE}}` **must remain** in `prompts/bootstrap.md`, `prompts/reanchor.md`, and prose that explains them: it is filled in at paste time, not at setup; `grep -ri example` → only this wizard and the tasks example (Phase 4 removes it).
+8. Self-check: no **project** placeholder survives outside this wizard — `grep -rE "\{\{(PROJECT_NAME|CODE_REPOS|INTEGRATION_BRANCH|TEST_COMMANDS|RELEASE_ORDER)\}\}" . --include="*.md" | grep -v setup-wizard` → empty. `{{HANDLE}}` **must remain** in `prompts/bootstrap.md`, `prompts/reanchor.md`, and prose that explains them: it is filled in at paste time, not at setup; `grep -ri example` → only this wizard and the tasks example (Phase 4 removes it). Finish with **`bin/olympus doctor`** — zero red findings before declaring setup complete.
 
 ## Phase 3 · Confirm the rulings
 
@@ -58,4 +58,4 @@ done
 
 ## Wrap up
 
-Summary (members, first tasks, remaining human to-dos: share the clone URL, first release…) → **land it on this repo's default branch**: Olympus is not a code repo and has no integration branch, so an instantiation parked on a side branch or in a worktree leaves every arriving member with an empty mountain → **leave no template residue**: `*.example.*` deleted, `grep -r "{{"` empty — from here on, working agents never open this wizard → commit `[setup] chore: instantiate Olympus` → **push only with the user's confirmation** → remind every member: paste `prompts/bootstrap.md` (with their handle) to their agent and start the first loop.
+Summary (members, first tasks, remaining human to-dos: share the clone URL, first release, **optionally configure wake channels** — copy `bin/samples/olympus.conf.example` to the root and pick heartbeat/hook/notify per `bin/README.md`, so seats get woken by events instead of by humans…) → **land it on this repo's default branch**: Olympus is not a code repo and has no integration branch, so an instantiation parked on a side branch or in a worktree leaves every arriving member with an empty mountain → **leave no template residue**: `*.example.*` deleted, `grep -r "{{"` empty — from here on, working agents never open this wizard → commit `[setup] chore: instantiate Olympus` → **push only with the user's confirmation** → remind every member: paste `prompts/bootstrap.md` (with their handle) to their agent and start the first loop.

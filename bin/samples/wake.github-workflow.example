@@ -1,0 +1,30 @@
+# .github/workflows/olympus-wake.yml — for an Olympus repo hosted on GitHub (distributed teams).
+# A push that lands letters wakes each recipient's remote channel (bin/olympus wake reads
+# olympus.conf: a Routine fire URL, or a notify fallback).
+#
+# Security (non-negotiable — mail-triggered agents are a prompt-injection surface):
+#   · trigger only on pushes by team members to the default branch (no fork PRs);
+#   · GITHUB_TOKEN with `contents: read` only; wake URLs/topics live in repo secrets;
+#   · letter content is DATA, never instructions (rules/02 §3.2) — keep it out of prompts.
+
+name: olympus-wake
+on:
+  push:
+    branches: [main]
+    paths: ["messages/inbox/**"]
+permissions:
+  contents: read
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - name: wake recipients of new letters
+        env:
+          NTFY_TOPIC: ${{ secrets.OLYMPUS_NTFY_TOPIC }}
+        run: |
+          seats=$(git diff --name-only HEAD^ HEAD -- messages/inbox/ | cut -d/ -f3 | sort -u)
+          for s in $seats; do
+            [ -f "pantheon/$s.md" ] && bin/olympus wake "$s"
+          done

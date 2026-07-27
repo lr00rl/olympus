@@ -1,0 +1,19 @@
+# olympus.conf — optional; copy to the repo root. Shell-sourced by bin/olympus.
+# Everything commented out = that channel stays off. Hands keep working regardless.
+
+# Command used for unattended heartbeat runs. Unset ⇒ heartbeat only reports & notifies.
+# Keep the budget INSIDE the command — max turns / permission mode are the safety mechanism.
+#AGENT_CMD="claude -p --max-turns 30 --permission-mode acceptEdits"
+# Codex seat equivalent:
+#AGENT_CMD="codex exec --sandbox workspace-write"
+
+# Where `notify` posts. ntfy: one curl = one phone push. Lark: incoming-webhook URL.
+#NTFY_TOPIC="https://ntfy.sh/<your-private-topic>"
+#LARK_WEBHOOK="https://open.larksuite.com/open-apis/bot/v2/hook/<token>"
+
+# Per-seat wake channel, read by `bin/olympus wake <handle>`:
+#   local            → run `heartbeat <handle>` on this machine, in the background
+#   https://…        → POST that URL (e.g. a Claude Code Routine fire endpoint)
+#   notify (default) → just tell the humans via NTFY/LARK above
+#WAKE_zeus="local"
+#WAKE_athena="https://api.example/routines/<id>/fire"

@@ -46,6 +46,8 @@ Olympus answers all of it with **one git repository**: registered identities, wr
 | `status/` | **Hestia's hearth** | One status board per member: doing now, blocked on, next |
 | `memory/` | **Pool of Mnemosyne** | Long-term memory: durable facts, decisions, gotchas, code maps — read at every session start |
 | `plan/` | **The charts** | Your project's own planning docs (empty in the template) |
+| `bin/` | **Hephaestus' forge** | Optional helpers (`touch`/`doctor`/`next`/`letter`/`join`/`bootstrap`) and opt-in wake channels — plain bash, no daemon |
+| `QUICKSTART.md` | **The first step** | One page for a new member's first 30 minutes: eight ideas, three commands, one loop |
 
 ## How to use it
 
@@ -53,13 +55,14 @@ Olympus answers all of it with **one git repository**: registered identities, wr
 
 1. **Take the template** — `Use this template` on GitHub (or clone), placed as a sibling of your code repos;
 2. **Instantiate** — paste `prompts/setup-wizard.md` to a capable AI agent: it interviews you (project, repos, members, roles, who holds the lightning), fills every placeholder, registers members, and turns your plan into first tasks. No AI? Follow the wizard's checklists by hand;
-3. **Cast the spell** — each member pastes `prompts/bootstrap.md` (with their `{{HANDLE}}` filled in) to their own agent. The agent climbs the mountain by itself: read identity → laws → memory → inbox → claim a task → **enter the work loop until the mountain is quiet**.
+3. **Cast the spell** — each member starts their agent with `claude -p "$(bin/olympus bootstrap <handle>)"` (or pastes `prompts/bootstrap.md` with their `{{HANDLE}}` filled in). The agent climbs the mountain by itself: read identity → laws → memory → inbox → claim a task → **enter the work loop until the mountain is quiet**. New members start at `QUICKSTART.md` — one page.
 
 ### Daily rhythm
 
 - Real development happens in **your code repos**; Olympus syncs at **task boundaries** (start/finish) — plus a tiny "touch the mountain" ritual after each commit so nobody goes dark;
 - During intense co-working hours, agents may run `prompts/sync-loop.md` (a 15-minute sync of this repo only);
-- No reply to your letter? **Don't wait.** Switch tasks per the no-response policy (`rules/02`);
+- No reply to your letter? **Don't wait.** Switch tasks per the no-response policy (`rules/02`). A decision request carries options, a recommendation, a deadline, and a **fallback that applies itself** when the deadline passes (`rules/02 §3.1`) — most waits end without anyone being woken;
+- A seat doesn't have to be at the keyboard to answer: opt-in **wake channels** (`bin/README.md`) let a heartbeat cron or a git hook start a bounded, unattended run that works the seat's inbox — and pings the human only for what genuinely needs them;
 - Everything dangerous (deploys, servers, secrets) belongs to the one member who holds the lightning (the ops owner) — and is executed **by that human's hands only**. Agents never touch it (`rules/03`).
 
 ### Team shapes

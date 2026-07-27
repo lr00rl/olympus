@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- macOS heartbeat for one seat. Install:
+       cp bin/samples/heartbeat.launchd.plist.example ~/Library/LaunchAgents/com.olympus.heartbeat.zeus.plist
+       edit the path and handle, then: launchctl load ~/Library/LaunchAgents/com.olympus.heartbeat.zeus.plist
+     One plist per active seat; StartInterval is seconds (7200 = every 2 h). -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.olympus.heartbeat.zeus</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd /path/to/olympus-repo &amp;&amp; bin/olympus heartbeat zeus</string>
+  </array>
+  <key>StartInterval</key><integer>7200</integer>
+  <key>StandardOutPath</key><string>/tmp/olympus-heartbeat-zeus.log</string>
+  <key>StandardErrorPath</key><string>/tmp/olympus-heartbeat-zeus.log</string>
+</dict>
+</plist>
