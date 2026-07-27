@@ -7,6 +7,11 @@ runtime: <what does the typing: "Claude Code" | "Codex CLI" | "Kimi CLI" | "huma
 share: <rough expected share of hands-on work, e.g. 30% — routing guidance, not a quota>
 roles: [developer]            # see README role vocabulary
 gated_by: []                  # handles whose [ack] my merges need regardless of file ownership
+inbox_autonomy:               # what my agent may finish alone with MY inbox, unattended (rules/02 §3.2)
+  info: answer                # answer | draft
+  review: draft               # act | draft  (act = verdict within my owned paths, evidence required)
+  decision: draft             # draft only — the ruling needs me, unless rules/03 §2.5 pre-authorizes it
+                              # approval is always draft-only + human-only; not configurable
 ops_owner: false              # ideally exactly one true on the whole mountain
 contract_steward: false
 integrator: false
