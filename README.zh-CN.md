@@ -35,19 +35,19 @@ Olympus 用**一个 git 仓库**解决全部:身份注册、规则成文、契�
 | `rules/` | 神律 | 分支合并 / 协作协议 / 权限边界 / 文档维护 |
 | `prompts/` | 神谕 | 预制咒语:bootstrap、工作循环、re-anchor 拉回、开工/收尾、同步、冲突、建站向导 |
 | `contract/` | 冥河誓约 | 接口契约 + 共享资源占坑表 + 变更单;违誓者返工 |
-| `tasks/` | 命运三女神 | 任务档案:从纺线(draft)到剪断(merged) |
+| `tasks/` | 命运三女神 | 任务集成档案 + 可机读 work units，算出不冲突的并行开发前沿 |
 | `messages/` | 赫尔墨斯 | 异步信箱:`inbox/<成员>/`,一信一文件,结构上永不冲突 |
 | `status/` | 赫斯提亚的炉灶 | 每人一块状态板(此刻在做什么) |
 | `memory/` | 记忆女神之泉 | 长期记忆:持久事实/决策缘由/坑/代码地图,每次会话启动必读 |
 | `plan/` | 神图 | 你们项目自己的规划文档(模版为空) |
-| `bin/` | 赫淮斯托斯的锻炉 | 可选助手(`touch`/`doctor`/`next`/`letter`/`join`/`bootstrap`)与可选唤醒通道——纯 bash,无守护进程 |
+| `bin/` | 赫淮斯托斯的锻炉 | 可选助手(`touch`/`doctor`/`next`/`frontier`/`letter`/`join`/`bootstrap`)与可选唤醒通道——shell + awk,无守护进程 |
 | `QUICKSTART.md` | 第一步 | 新成员前 30 分钟的一页说明:八个概念、三条命令、一个循环 |
 
 ## 怎么用
 
 **人类三步**:①`Use this template` 取模版,与代码仓放成兄弟目录;②把 `prompts/setup-wizard.md` 粘给较强的 AI——它访谈你、填占位符、登记成员、把规划拆成首批任务(不用 AI 就照清单手填);③每位成员用 `claude -p "$(bin/olympus bootstrap <handle>)"` 一行启动自己的 agent(或把 `prompts/bootstrap.md` 替换 `{{HANDLE}}` 后粘贴),agent 自己上山进入工作循环。新成员从 `QUICKSTART.md` 开始——只有一页。
 
-**日常节奏**:开发在代码仓,Olympus 在任务边界同步;每次 commit 后有一个极小的"触山礼"(touch the mountain)防失联;密集协作时可开 15 分钟同步循环;信没人回不等,换任务——决策请求自带选项、推荐、期限与 **fallback,到期自动生效**(`rules/02 §3.1`),大多数等待不需要唤醒任何人;席位也不必守在键盘前:可选的**唤醒通道**(`bin/README.md`)让心跳定时任务或 git hook 冷启动一次有界的无人值守 run 来处理收件箱,只在真正需要人时通知到手机;危险操作只属于执雷者(运维负责人)且**必须人手执行**,agent 零接触。
+**日常节奏**:开发在代码仓,Olympus 在任务边界同步;每次 commit 后有一个极小的"触山礼"(touch the mountain)防失联;Orchestrator 用 `bin/olympus frontier` 稳定地为每个空闲席位选一个 work unit，并预占 repo writer 名额与独占资源，因此输出可以安全并行启动;开发前硬依赖与仅合入前门禁不再混为一谈;密集协作时可开 15 分钟同步循环;信没人回不等,换任务——决策请求自带选项、推荐、期限与 **fallback,到期自动生效**(`rules/02 §3.1`),大多数等待不需要唤醒任何人;席位也不必守在键盘前:可选的**唤醒通道**(`bin/README.md`)让心跳定时任务或 git hook 冷启动一次有界的无人值守 run 来处理收件箱,只在真正需要人时通知到手机;危险操作只属于执雷者(运维负责人)且**必须人手执行**,agent 零接触。
 
 **适用形态**:席位(seat)可以由人、agent、或人+agent 组成,不同席位可以跑不同的 agent CLI(异构是常态:按领域与切片大小路由,对所有 runtime 同等把关);多个 agent 跑在同一台机器、共用同一套 clone 也是常见形态——代码在各自的 worktree 里改,Olympus 仓则刻意共享(`rules/05`)。协议中没有任何"成对"假设——山上想住几位神都行(2 人、5 人、20 人,人与 agent 任意混合);协调成本随信件数增长,不随成员数增长。N 人各带 agent / 1 人带 N 个 agent / 纯 agent 团队(建议保留一位人类当宙斯)均可。
 

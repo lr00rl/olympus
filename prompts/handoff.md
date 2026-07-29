@@ -18,7 +18,9 @@ A task is resumable when **the task file alone** — no chat history, no memory 
 
 1. **Push everything.** Local-only work is invisible work; nothing that matters stays on your disk.
 2. Append a `handoff` entry to the task Log with the four answers **plus the dead ends** — "tried X, failed because Y" is the most expensive thing for the next member to rediscover.
-3. Set `owner:` to the receiver, keep `status: in_progress` or `blocked`, set `last_touched_by: <me>`.
+3. Set top-level `owner:` to the receiver, keep the task/unit status `in_progress` or `blocked`,
+   and set `last_touched_by: <me>`. Work units inherit the task owner. If only one unit belongs to
+   another seat, split it into its own task instead of creating two writers in one task file.
 4. Letter the receiver: task id, why it is moving, the four answers in one paragraph, anything awaiting an ack.
 5. **Harvest memory now** (`memory/README.md`) — the receiver cannot inherit what you learned unless it is written down.
 
@@ -27,7 +29,8 @@ A task is resumable when **the task file alone** — no chat history, no memory 
 1. Read in this order: task file → letter → code. The file is the contract; the letter is context.
 2. **Verify the four answers against reality** before building on them — branch exists, commit is really pushed, tests really are where the log says. Logs describe the moment they were written.
 3. Reality disagrees with the log? Fix the log first, then letter the giver — do not silently absorb the drift.
-4. Update `owner:` and status, then re-enter the work loop (`prompts/work-loop.md`).
+4. Update top-level `owner:` and the exact work unit's status, then re-enter the work loop
+   (`prompts/work-loop.md`).
 
 ## Two things a handoff is not
 

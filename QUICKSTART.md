@@ -45,8 +45,10 @@ open letters → its tasks) → reports → enters the **work loop** and stays i
 Touch → Pick → Start → Build → Verify → Finish → Checkpoint → back to Touch
 ```
 
-- **Pick** order: my `in_progress` → letters where someone waits on me → `ready` tasks with no
-  deps (`bin/olympus next <me>` lists them).
+- **Pick** order: my in-progress work unit → letters where someone waits on me → runnable
+  development units (`bin/olympus next <me>`). The Orchestrator uses `bin/olympus frontier` to
+  publish a conflict-free parallel launch set; it reserves one unit per idle seat plus repo and
+  exclusive-resource capacity. Merge-only gates do not hide runnable development.
 - **Blocked?** Mark it, send a letter, switch tasks. Waiting is never idling.
 - **No reply?** Don't chase. Past 24h a decision letter applies its own fallback; everything else
   proceeds with a `[no-response]` note.

@@ -1,10 +1,10 @@
-# Oracle · Finish a task (merge + communicate)
+# Oracle · Finish a work unit or task (merge + communicate)
 
 > Work-loop step ⑥. Any step fails → stop and report; no skipping. **This is not the end of the session — loop back after.**
 
 ---
 
-Finishing **TASK-____**:
+Finishing **TASK-____#unit** (or the whole task after all units close):
 
 ## 1. Preconditions (rules/01 §4)
 
@@ -12,6 +12,12 @@ Finishing **TASK-____**:
 2. **Boundary check** (mechanical): `git diff --name-only $(git merge-base origin/{{INTEGRATION_BRANCH}} HEAD)..HEAD` — every file must match the task's Allowed paths. Out-of-bounds files → stop: either move the change to its own task, or record the boundary amendment in the task log (and letter the owner if it crosses ownership).
 3. Full tests `{{TEST_COMMANDS}}` — report **real numbers**; DoD criteria are proven by their **named tests**, not by "suite green".
 4. **Acks**: touching contract / others' exclusive / shared files / shared resources / auth / someone's authority area? Confirm their `[ack]` is on record — missing → send/chase the letter, park this task, **switch tasks and keep looping**.
+
+For a work unit, check its own `merge_after`, `resources`, `needs_ack`, and `human_only` fields.
+Mark the unit `done` after its code is pushed and its named proof is recorded. Do **not** mark the
+whole task `done` or begin integration until every required unit is `done`/`merged` and all
+integration-only gates are satisfied. A finished unit should immediately expose the next frontier
+via `bin/olympus frontier`; waking or assigning that frontier does not wait for the whole task.
 
 ## 2. Merge (owner's hands; multi-repo in {{RELEASE_ORDER}} order)
 
@@ -25,7 +31,9 @@ git push origin {{INTEGRATION_BRANCH}} && git push origin feat/<handle>-task____
 
 ## 3. Communicate (one Olympus commit+push)
 
-1. Task file → `merged`; record: scope, conflicts & resolutions, test numbers, docs touched, leftovers ("none" is a valid entry — say it).
+1. Unit → `merged` when its branch content is integrated. Only after every required unit and
+   task-level DoD closes: task file → `merged`; record scope, conflicts & resolutions, test
+   numbers, docs touched, and leftovers ("none" is a valid entry — say it).
 2. Status board: move to recent, update next. Sharing a machine? Remove your worktree too — `git -C <repo> worktree remove ../.wt/<handle>-<repo>` (`rules/05 §3`).
 3. **Harvest memory** — exactly one op, preferred in this order: **NOOP** (default: most tasks teach nothing durable) / **UPDATE** an existing note / **SUPERSEDE** a now-wrong note / **ADD** (new fact ≤30 lines + index line, `keywords:` carrying paths & verbatim errors). Search `INDEX.md` before adding. (`memory/README.md`)
 4. Finish letter to affected members:

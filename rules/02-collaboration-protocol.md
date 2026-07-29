@@ -147,6 +147,18 @@ See `prompts/sync-loop.md`. Three boundaries: **this repo only** (code repos syn
 - DoD must be explicit: code merged + tests green + docs updated + finish letter sent.
 - **Resumable by someone else**: seats work at different hours and on different runtimes, so a paused or handed-over task must be resumable from the file alone — where (branch + pushed commit), done/not done, verified/not verified, next step, and the dead ends. Procedure: `prompts/handoff.md`.
 - **A task's first slice must stand alone** — precondition for `ready`. Every task states, in its *First slice* section, the first deliverable that depends on nothing: no ruling, no sibling task, no resource someone else must create. If nothing can start until X lands, the task is mis-sized: **split it**, so the independent part is its own claimable task instead of parking a seat behind X. Same rule for `depends_on:` — name the *specific* items that gate you (`TASK-0042 items 1–4`), never a whole umbrella task, and say which phase each gates.
+- **Scheduling happens at work-unit granularity.** For `work-units/v1` tasks, encode each phase in
+  `work_units`: true development gates go in `start_after`; dependencies that only matter at merge
+  go in `merge_after`. Review/contract ack, human decisions, human-only operations, and exclusive
+  resources remain distinct gates — never collapse them into a task-wide dependency that parks
+  otherwise runnable development. `bin/olympus next <seat>` shows that seat's choices;
+  `bin/olympus frontier` greedily reserves one launch per idle seat plus repo/resource capacity and
+  is the mechanical safe-parallel check. `bin/olympus doctor` enforces runnable supply separately
+  for every active seat; a global pile of work owned by someone else does not satisfy the rule.
+- **One task file still has one writer.** Every work unit inherits the task owner. If a unit belongs
+  to another seat, split it into its own task; do not trade scheduling parallelism for shared-file
+  conflicts in `tasks/`. Assign the top-level owner before `ready`: unassigned work is not
+  claimable and cannot count as backlog supply for multiple seats.
 
 > Field note: one instantiation made this mistake twice in a day, in two different shapes — first a `depends_on` that pointed at an entire review sweep when only four of its items mattered, then a task whose first half needed nothing but was read as blocked because the body was never sliced. Both times the highest-share seat sat idle. Narrowing the dependency fixed the symptom; only slicing the body fixed the cause.
 

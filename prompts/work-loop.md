@@ -15,7 +15,7 @@
 | Step | Action | Ref |
 |---|---|---|
 | ① Touch | pull Olympus, scan inbox & changelog, push status delta | AGENTS.md §2 |
-| ② Pick | priority: in_progress > letters where someone waits on me (ack/review/reply) > `ready` w/o deps > instantiate from plan/ | tasks/README |
+| ② Pick | priority: my in-progress work unit > letters where someone waits on me > runnable `start_after` frontier > instantiate from plan/ | tasks/README |
 | ③ Start | `prompts/start-task.md` | |
 | ④ Build | small commits; ownership boundaries; **Touch after each commit** | rules/01/03 |
 | ⑤ Verify | run tests / real execution; record real numbers | |
@@ -25,7 +25,7 @@
 ## 2. Anti-idle / anti-drift clauses
 
 1. **Finishing a task ≠ ending the session.** After ⑥ comes ⑦ then ①, not a farewell.
-2. **Before writing any summary, run the three checks**: DoD all ticked? · any `ready` task left? · any `open` letter? — **any "yes" → back to ①.**
+2. **Before writing any summary, run the three checks**: DoD all ticked? · any runnable work unit left? · any `open` letter? — **any "yes" → back to ①.**
 3. "Sent a letter, waiting" is not a stop — switch tasks (rules/02 §4).
 4. "This task is huge" is not a stop — split it into subtasks in tasks/ and do the first one. **The Touch cadence survives inside big tasks**: however deep you are, every commit-level step ends with a Touch. If you notice you haven't touched the mountain in a long stretch — stop building, Touch, then continue.
 5. Partial work never poses as done: plan-only isn't done, half-written isn't done, untested isn't done. Interrupting? keep `in_progress`, log the break-point.
@@ -38,7 +38,7 @@
 ✔ done:    TASK-xxxx <one line> (commit <hash> / tests <real numbers>)
 ▶ next:    TASK-yyyy <why this one>
 ⏸ waiting: <letter to whom about what | none>
-☰ backlog: <n> ready tasks, <m> open letters
+☰ backlog: <n> runnable work units, <m> open letters
 ```
 
 The human may redirect at any checkpoint; **no instruction means keep looping**.

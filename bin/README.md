@@ -6,14 +6,16 @@ flowing while its humans sleep.
 
 ## The tool
 
-`bin/olympus` — one bash file, no dependencies beyond git/grep (curl only for `notify`/`wake`).
+`bin/olympus` plus its small POSIX-awk work-unit parser — no dependencies beyond git/grep/awk
+(curl only for `notify`/`wake`).
 Run it with no arguments for the command list. Highlights:
 
 | Command | Replaces |
 |---|---|
 | `touch <me>` | the four-command Touch ritual, with **only your paths** staged (rules/05 §2) |
 | `doctor` | every mechanical check the rules used to state as prose — red = violation, yellow = housekeeping due. Run it at Touch time, in a pre-commit hook, and at the end of setup |
-| `next <me>` | "what should I do now?" — in_progress → letters waiting on me → ready & dependency-free |
+| `next <me>` | "what should I do now?" — in-progress units → letters → my runnable `start_after` choices |
+| `frontier` | safe parallel launches: one per idle seat, with repo/resource capacity reserved and merge/ack gates shown separately |
 | `letter <to> <slug> --needs <kind>` | hand-built UTC filenames; `--needs decision` scaffolds the four-pack; `--broadcast` fans out to every inbox |
 | `join <handle>` | the four manual onboarding steps (pantheon/README §3) |
 | `bootstrap <handle>` | pasting `prompts/bootstrap.md` and editing `{{HANDLE}}` by hand — `claude -p "$(bin/olympus bootstrap zeus)"` starts a session in one line |

@@ -41,12 +41,12 @@ Olympus answers all of it with **one git repository**: registered identities, wr
 | `rules/` | **The laws** | Branching & merging / collaboration protocol / boundaries / documentation |
 | `prompts/` | **Oracles** | Ready-made spells: bootstrap, work loop, re-anchor, start/finish task, sync loop, conflicts, setup wizard |
 | `contract/` | **Oaths on the Styx** | Interface contracts + shared-resource ledger + change log; break an oath, redo the work |
-| `tasks/` | **The Moirai** | Task files: each undertaking from spun (draft) to cut (merged) |
+| `tasks/` | **The Moirai** | Task integration records plus machine-readable work units for a conflict-free development frontier |
 | `messages/` | **Hermes** | Async mailboxes: `inbox/<member>/`, one file per letter, conflict-free by construction |
 | `status/` | **Hestia's hearth** | One status board per member: doing now, blocked on, next |
 | `memory/` | **Pool of Mnemosyne** | Long-term memory: durable facts, decisions, gotchas, code maps — read at every session start |
 | `plan/` | **The charts** | Your project's own planning docs (empty in the template) |
-| `bin/` | **Hephaestus' forge** | Optional helpers (`touch`/`doctor`/`next`/`letter`/`join`/`bootstrap`) and opt-in wake channels — plain bash, no daemon |
+| `bin/` | **Hephaestus' forge** | Optional helpers (`touch`/`doctor`/`next`/`frontier`/`letter`/`join`/`bootstrap`) and opt-in wake channels — shell + awk, no daemon |
 | `QUICKSTART.md` | **The first step** | One page for a new member's first 30 minutes: eight ideas, three commands, one loop |
 
 ## How to use it

@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # bin/olympus — the forge. Small helpers for the Olympus protocol.
 #
-# Plain bash + git + grep; no daemon, no database; network only in notify/wake (opt-in).
+# Plain bash + git + grep + awk; no daemon, no database; network only in notify/wake (opt-in).
 # Every command mirrors a by-hand procedure documented in the rules — hands remain
 # the reliable path (README design principle 5); this file only makes them cheaper.
 #
 #   touch <handle> [msg]   the Touch: pull, scan inbox, stage MY paths, commit, push
 #   doctor                 mechanical protocol checks; red = violation, yellow = housekeeping
-#   next <handle>          my work queue: in_progress → letters waiting on me → ready & dep-free
+#   next <handle>          my work queue: in_progress → letters → runnable work-unit frontier
+#   frontier               safe parallel launch set; integration-only gates stay visible
 #   letter <to> <slug> --needs <kind> [--re TASK-XXXX] [--from <me>] [--broadcast]
 #   join <handle>          profile skeleton + inbox + status board for a new seat
 #   bootstrap <handle>     print the bootstrap prompt (use: claude -p "$(bin/olympus bootstrap zeus)")
@@ -35,6 +36,34 @@ need_handle() {
 }
 
 conf_key() { printf '%s' "$1" | sed 's/[^a-zA-Z0-9]/_/g'; }
+
+work_unit_report() {
+  local mode="$1" handle="${2:-*}" task
+  local -a task_files=()
+  for task in tasks/TASK-*.md; do
+    [ -e "$task" ] || continue
+    case "$task" in *_template*) continue;; esac
+    task_files+=("$task")
+  done
+  [ "${#task_files[@]}" -gt 0 ] || return 0
+  awk -v mode="$mode" -v handle="$handle" -f "$ROOT/bin/olympus-work-units.awk" "${task_files[@]}"
+}
+
+print_work_units() {
+  local report="$1" category="$2"
+  printf '%s\n' "$report" | awk -F '\t' -v category="$category" '
+    $1 == category {
+      owner = $4 == "" || $4 == "<handle>" ? "unassigned" : $4
+      details = "owner: " owner
+      if ($6 != "") details = details "; blocked: " $6
+      if ($7 != "") details = details "; merge_after: " $7
+      if ($8 != "") details = details "; repos: " $8
+      if ($9 != "") details = details "; resources: " $9
+      if ($10 == "yes") details = details "; ack before merge"
+      printf "   %s  %s  (%s)\n", $2, $5, details
+    }
+  '
+}
 
 # stage exactly the paths a seat owns: its board, letters it touched, tasks it owns
 stage_mine() {
@@ -111,6 +140,13 @@ cmd_doctor() {
     esac
   done
 
+  # 2b. machine-readable work-unit schema and dependency graph
+  work_unit_doctor="$(work_unit_report doctor '*')"
+  while IFS=$'\t' read -r kind detail; do
+    [ -n "$kind" ] || continue
+    [ "$kind" = "RED" ] && red "$detail"
+  done <<< "$work_unit_doctor"
+
   # 3. letters
   for f in messages/inbox/*/*.md; do
     [ -e "$f" ] || continue
@@ -151,21 +187,15 @@ cmd_doctor() {
     [ "$n" -gt 40 ] && yel "$b: $n lines — boards balloon; recents ≤5 (rules/02 §2)"
   done
 
-  # 7. backlog liveness (rules/02 §4.4)
-  active=0
+  # 7. backlog liveness (rules/02 §4.4): supply is per active seat, never global.
   for p in pantheon/*.md; do
     case "$p" in *_template*|*README*) continue;; esac
-    grep -q '^status: active' "$p" && active=$((active+1))
+    grep -q '^status: active' "$p" || continue
+    seat="$(basename "$p" .md)"
+    seat_report="$(work_unit_report inventory "$seat")"
+    ready_free="$(printf '%s\n' "$seat_report" | awk -F '\t' '$1 == "RUNNABLE" { count++ } END { print count + 0 }')"
+    [ "$ready_free" -eq 0 ] && red "backlog empty for $seat: 0 assigned runnable work units — Orchestrator P0 (rules/02 §4.4)"
   done
-  if [ "$active" -gt 0 ]; then
-    ready_free=0
-    for t in tasks/TASK-*.md; do
-      [ -e "$t" ] || continue
-      case "$t" in *_template*) continue;; esac
-      grep -q '^status: ready' "$t" && grep -q '^depends_on: \[\]' "$t" && ready_free=$((ready_free+1))
-    done
-    [ "$ready_free" -eq 0 ] && red "backlog empty: $active active seat(s), 0 ready dependency-free tasks — Orchestrator P0 (rules/02 §4.4)"
-  fi
 
   # 8. stale worktrees at the workspace root
   if [ -d "$ROOT/../.wt" ]; then
@@ -186,25 +216,29 @@ cmd_doctor() {
 
 cmd_next() {
   need_handle "${1:-}"
-  echo "== in progress (mine)"
-  for t in tasks/TASK-*.md; do
-    [ -e "$t" ] || continue
-    grep -q '^status: in_progress' "$t" && grep -q "^owner: $h" "$t" \
-      && printf '   %s  %s\n' "$t" "$(sed -n 's/^title: *//p' "$t" | head -1)"
-  done
+  report="$(work_unit_report inventory "$h")"
+  echo "== in progress work units (mine)"
+  print_work_units "$report" IN_PROGRESS
   echo "== open letters for me"
   for f in "messages/inbox/$h"/*.md; do
     [ -e "$f" ] || continue
     grep -q '^status: open' "$f" \
       && printf '   %s  (needs: %s)\n' "$f" "$(sed -n 's/^needs: *//p' "$f" | head -1)"
   done
-  echo "== ready, dependency-free (claimable)"
-  for t in tasks/TASK-*.md; do
-    [ -e "$t" ] || continue
-    case "$t" in *_template*) continue;; esac
-    grep -q '^status: ready' "$t" && grep -q '^depends_on: \[\]' "$t" \
-      && printf '   %s  %s  (owner: %s)\n' "$t" "$(sed -n 's/^title: *//p' "$t" | head -1)" "$(sed -n 's/^owner: *//p' "$t" | head -1)"
-  done
+  echo "== runnable development choices (assigned to me)"
+  print_work_units "$report" RUNNABLE
+  echo "== waiting before start (mine)"
+  print_work_units "$report" WAITING
+}
+
+cmd_frontier() {
+  report="$(work_unit_report frontier '*')"
+  echo "== in progress work units (all seats)"
+  print_work_units "$report" IN_PROGRESS
+  echo "== safe parallel launch frontier (one unit per available seat)"
+  print_work_units "$report" RUNNABLE
+  echo "== waiting before start (all seats)"
+  print_work_units "$report" WAITING
 }
 
 cmd_letter() {
@@ -341,11 +375,12 @@ case "$cmd" in
   touch)     cmd_touch "$@";;
   doctor)    cmd_doctor "$@";;
   next)      cmd_next "$@";;
+  frontier)  cmd_frontier "$@";;
   letter)    cmd_letter "$@";;
   join)      cmd_join "$@";;
   bootstrap) cmd_bootstrap "$@";;
   heartbeat) cmd_heartbeat "$@";;
   wake)      cmd_wake "$@";;
   notify)    cmd_notify "$@";;
-  help|*)    sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//';;
+  help|*)    sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//';;
 esac
