@@ -2,10 +2,16 @@
 # Everything commented out = that channel stays off. Hands keep working regardless.
 
 # Command used for unattended heartbeat runs. Unset ⇒ heartbeat only reports & notifies.
-# Keep the budget INSIDE the command — max turns / permission mode are the safety mechanism.
+# heartbeat enforces a hard wall-clock timeout around this command regardless of its flags;
+# a turn bound in the command itself is the second belt (doctor flags its absence).
 #AGENT_CMD="claude -p --max-turns 30 --permission-mode acceptEdits"
-# Codex seat equivalent:
+# Codex seat equivalent (resume keeps the thread's warm context; name = stable handle):
 #AGENT_CMD="codex exec --sandbox workspace-write"
+
+# Hard wall-clock budget per unattended run, minutes (default 15).
+#HEARTBEAT_TIMEOUT_MIN=15
+# Grace added to decision `due:` before the fallback must be applied, minutes (default 30).
+#OLYMPUS_FALLBACK_GRACE_MIN=30
 
 # Where `notify` posts. ntfy: one curl = one phone push. Lark: incoming-webhook URL.
 #NTFY_TOPIC="https://ntfy.sh/<your-private-topic>"
@@ -15,5 +21,8 @@
 #   local            → run `heartbeat <handle>` on this machine, in the background
 #   https://…        → POST that URL (e.g. a Claude Code Routine fire endpoint)
 #   notify (default) → just tell the humans via NTFY/LARK above
+# ONE WAKE HOME PER SEAT: exactly one automatic executor per seat, declared here once.
+# Do not point a cron on machine A and a CI heartbeat at the same seat — the extra
+# channel must be `notify`. (bin/README "One wake home per seat".)
 #WAKE_zeus="local"
 #WAKE_athena="https://api.example/routines/<id>/fire"

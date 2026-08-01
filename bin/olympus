@@ -26,8 +26,55 @@ cd "$ROOT"
 # ---------- shared helpers ----------
 
 utc_iso()  { date -u +%Y-%m-%dT%H:%MZ; }
-utc_file() { echo "$(date -u +%Y%m%d-%H%M)Z"; }
+# seconds precision: two letters from one sender in one minute must not collide (doctor G9)
+utc_file() { echo "$(date -u +%Y%m%d-%H%M%S)Z"; }
 die()      { echo "olympus: $*" >&2; exit 1; }
+
+# parse "YYYY-MM-DDTHH:MMZ" (or :SS) to epoch seconds; GNU date first, then BSD/macOS
+epoch_from_utc() {
+  date -u -d "$1" +%s 2>/dev/null && return 0
+  date -j -u -f "%Y-%m-%dT%H:%MZ" "$1" +%s 2>/dev/null && return 0
+  date -j -u -f "%Y-%m-%dT%H:%M:%SZ" "$1" +%s 2>/dev/null && return 0
+  return 1
+}
+
+# hard wall-clock budget for unattended commands (bin/README "Budget rules"):
+# timeout/gtimeout when present, else a portable watchdog. Never unbounded.
+run_bounded() {
+  rb_min="$1"; shift
+  if command -v timeout >/dev/null 2>&1; then timeout "${rb_min}m" "$@"
+  elif command -v gtimeout >/dev/null 2>&1; then gtimeout "${rb_min}m" "$@"
+  else
+    "$@" & rb_pid=$!
+    ( sleep "$((rb_min * 60))" && kill -TERM "$rb_pid" 2>/dev/null ) & rb_dog=$!
+    rb_rc=0; wait "$rb_pid" || rb_rc=$?
+    kill "$rb_dog" 2>/dev/null || true
+    return "$rb_rc"
+  fi
+}
+
+# repo-level transaction lock: serializes pull→stage→commit→push on a shared clone
+# (rules/05 — autostash must never replay another seat's mid-flight edits). mkdir is
+# atomic everywhere; a crashed holder is taken over by age (default 10 min).
+REPO_LOCK_D="$ROOT/.git/olympus-repo.lock.d"
+REPO_LOCKED=0
+repo_lock() {
+  rl_max=$(( ${OLYMPUS_REPO_LOCK_MAX_MIN:-10} * 60 )); rl_tries=0
+  until mkdir "$REPO_LOCK_D" 2>/dev/null; do
+    rl_started="$(cat "$REPO_LOCK_D/started" 2>/dev/null || echo 0)"
+    rl_age=$(( $(date -u +%s) - rl_started ))
+    if [ "$rl_age" -gt "$rl_max" ]; then
+      echo "olympus: taking over stale repo lock (age ${rl_age}s)" >&2
+      rm -rf "$REPO_LOCK_D"; continue
+    fi
+    rl_tries=$((rl_tries + 1))
+    [ "$rl_tries" -ge 30 ] && die "repo busy: another seat is mid-Touch (${rl_age}s); retry shortly"
+    sleep 1
+  done
+  date -u +%s > "$REPO_LOCK_D/started"
+  REPO_LOCKED=1
+}
+repo_unlock() { [ "$REPO_LOCKED" = 1 ] && rm -rf "$REPO_LOCK_D"; REPO_LOCKED=0; return 0; }
 
 need_handle() {
   h="${1:-${OLYMPUS_HANDLE:-}}"
@@ -71,7 +118,8 @@ stage_mine() {
   [ -f "status/$h.md" ] && git add "status/$h.md"
   [ -d "messages/inbox/$h" ] && git add "messages/inbox/$h"
   for f in messages/inbox/*/*-"$h"-*.md; do [ -e "$f" ] && git add "$f"; done
-  [ -d messages/archive ] && git add messages/archive
+  # only MY archive sweep — never scoop another seat's in-flight `git mv` (rules/05 §2)
+  [ -d "messages/archive/$h" ] && git add "messages/archive/$h"
   for t in tasks/TASK-*.md; do
     [ -e "$t" ] || continue
     grep -q "^owner: $h" "$t" && git add "$t"
@@ -84,6 +132,10 @@ stage_mine() {
 cmd_touch() {
   need_handle "${1:-}"; shift $(( $# > 0 ? 1 : 0 )) || true
   msg="${*:-touch}"
+  # the whole pull→stage→commit→push is one transaction under the repo lock: on a shared
+  # clone, concurrent autostash would otherwise stash/replay ANOTHER seat's edits (G11)
+  trap 'repo_unlock' EXIT
+  repo_lock
   # --autostash: in-flight edits (mine or another seat's on a shared clone) must not block the pull
   git pull --rebase --autostash
   open_letters="$(grep -l '^status: open' "messages/inbox/$h"/*.md 2>/dev/null || true)"
@@ -101,6 +153,7 @@ cmd_touch() {
     git commit -m "[$h] sync: $msg"
     git push
   fi
+  repo_unlock
 }
 
 cmd_doctor() {
@@ -155,6 +208,26 @@ cmd_doctor() {
     if [ "$nd" = "decision" ]; then
       grep -q '^fallback:' "$f" || red "$f: needs: decision without fallback (rules/02 §3.1)"
       grep -q '^due:' "$f" || red "$f: needs: decision without due (rules/02 §3.1)"
+      # the async chain's last link: due (+grace) passed on an open letter ⇒ the sender
+      # MUST have applied the fallback — prose alone was the G1 gap
+      if [ "$st" = "open" ]; then
+        due="$(sed -n 's/^due: *//p' "$f" | head -1 | sed 's/[[:space:]]*#.*$//')"
+        fb="$(sed -n 's/^fallback: *//p' "$f" | head -1 | sed 's/[[:space:]]*#.*$//' | tr -d '"')"
+        if [ -n "$due" ]; then
+          if due_e="$(epoch_from_utc "$due")"; then
+            grace=$(( ${OLYMPUS_FALLBACK_GRACE_MIN:-30} * 60 ))
+            if [ "$(date -u +%s)" -gt $(( due_e + grace )) ]; then
+              if [ "$fb" = "none" ]; then
+                yel "$f: decision overdue and fallback: none — wake the decider (bin/README)"
+              elif ! grep -q '\[fallback-applied\]' "$f"; then
+                red "$f: due passed (+${OLYMPUS_FALLBACK_GRACE_MIN:-30}m grace) without [fallback-applied] — sender applies the fallback (rules/02 §3.1)"
+              fi
+            fi
+          else
+            yel "$f: due '$due' not parseable as UTC YYYY-MM-DDTHH:MMZ (§0)"
+          fi
+        fi
+      fi
     fi
     if [ "$st" = "open" ]; then
       base="$(basename "$f")"; fdate="${base%%-*}"
@@ -207,6 +280,15 @@ cmd_doctor() {
   if [ -z "$ph" ]; then
     ex="$(ls pantheon/*.example.md tasks/*.example.md 2>/dev/null || true)"
     [ -n "$ex" ] && yel "example residue: $(echo "$ex" | tr '\n' ' ') — delete at setup (wizard wrap-up)"
+  fi
+
+  # 10. unattended budget hygiene: wall-clock is enforced by heartbeat itself (run_bounded);
+  #     a turn bound inside AGENT_CMD is the second belt — flag its absence
+  if [ -n "${AGENT_CMD:-}" ]; then
+    case "$AGENT_CMD" in
+      *--max-turns*|*--max-iterations*) : ;;
+      *) yel "olympus.conf AGENT_CMD carries no turn bound (--max-turns/--max-iterations) — wall-clock timeout still applies (bin/README)";;
+    esac
   fi
 
   echo "----"
@@ -281,16 +363,19 @@ due: $(date -u +%Y-%m-%d)T00:00Z   # set it — UTC
 fallback: a                        # or \"none\" (must wait)
 \`\`\`"
   fi
+  # noclobber: an existing path means a same-second sender+slug collision — refuse, never overwrite
+  write_letter() {
+    if ( set -C; printf '%s\n' "$body" > "$1" ) 2>/dev/null; then echo "wrote $1"
+    else die "letter already exists: $1 — pick another slug (never overwrite mail)"; fi
+  }
   if [ "$broadcast" -eq 1 ]; then
     for d in messages/inbox/*/; do
       [ -d "$d" ] || continue
-      printf '%s\n' "$body" > "$d$fname"
-      echo "wrote $d$fname"
+      write_letter "$d$fname"
     done
   else
     [ -d "messages/inbox/$to" ] || die "no inbox: messages/inbox/$to"
-    printf '%s\n' "$body" > "messages/inbox/$to/$fname"
-    echo "wrote messages/inbox/$to/$fname"
+    write_letter "messages/inbox/$to/$fname"
   fi
   echo "fill the body, then commit via: bin/olympus touch $from"
 }
@@ -315,10 +400,27 @@ cmd_bootstrap() {
 
 cmd_heartbeat() {
   need_handle "${1:-}"
-  lock="${TMPDIR:-/tmp}/olympus-heartbeat-$h.lock"
-  if [ -e "$lock" ]; then echo "heartbeat: previous run still holds $lock — skipping"; exit 0; fi
-  : > "$lock"; trap 'rm -f "$lock"' EXIT
+  # atomic per-seat lock (mkdir) + stale takeover: a SIGKILLed run must not silence the
+  # floor channel forever (G3). Stale = holder dead, or older than timeout + margin.
+  lockd="${TMPDIR:-/tmp}/olympus-heartbeat-$h.lock.d"
+  hb_max=$(( ( ${HEARTBEAT_TIMEOUT_MIN:-15} + 5 ) * 60 ))
+  if ! mkdir "$lockd" 2>/dev/null; then
+    hb_pid="$(cat "$lockd/pid" 2>/dev/null || echo '')"
+    hb_started="$(cat "$lockd/started" 2>/dev/null || echo 0)"
+    hb_age=$(( $(date -u +%s) - hb_started ))
+    hb_alive=0; [ -n "$hb_pid" ] && kill -0 "$hb_pid" 2>/dev/null && hb_alive=1
+    if [ "$hb_alive" = 1 ] && [ "$hb_age" -le "$hb_max" ]; then
+      echo "heartbeat: previous run (pid $hb_pid, ${hb_age}s) still holds the lock — skipping"; exit 0
+    fi
+    echo "heartbeat: taking over stale lock (pid ${hb_pid:-?}, alive=$hb_alive, age=${hb_age}s)"
+    rm -rf "$lockd"
+    mkdir "$lockd" 2>/dev/null || { echo "heartbeat: lost the takeover race — skipping"; exit 0; }
+  fi
+  echo "$$" > "$lockd/pid"; date -u +%s > "$lockd/started"
+  trap 'rm -rf "$lockd"; repo_unlock' EXIT
+  repo_lock
   git pull --rebase --autostash --quiet
+  repo_unlock
   pending="$(grep -l '^status: open' "messages/inbox/$h"/*.md 2>/dev/null || true)"
   if [ -z "$pending" ]; then
     echo "heartbeat: inbox quiet for $h — nothing to do"   # cheap no-op: zero agent tokens
@@ -332,7 +434,8 @@ cmd_heartbeat() {
 - This run is budgeted: finish records over starting large work; end every thread with the Touch.
 - Never merge to the integration branch; never touch the danger table (rules/03); never begin work that needs a human mid-flight.
 - Whatever needs my principal: draft it in the right file, then send ONE consolidated notification at the end via: bin/olympus notify \"[$h] needs you\" \"<one line per item>\"."
-    $AGENT_CMD "$prompt"
+    # hard wall-clock budget, enforced HERE — not delegated to whatever flags AGENT_CMD carries (G2)
+    run_bounded "${HEARTBEAT_TIMEOUT_MIN:-15}" $AGENT_CMD "$prompt"
   else
     echo "heartbeat: open letters for $h (no AGENT_CMD configured — reporting only):"
     for f in $pending; do printf '   %s  (needs: %s)\n' "$f" "$(sed -n 's/^needs: *//p' "$f" | head -1)"; done
@@ -349,7 +452,12 @@ cmd_wake() {
       echo "wake: starting background heartbeat for $h"
       nohup "$0" heartbeat "$h" >/dev/null 2>&1 & ;;
     http*://*)
-      curl -fsS -X POST "$mode" >/dev/null && echo "wake: fired $mode" ;;
+      # a silently failed remote wake would leave only the heartbeat floor — degrade loudly (G4)
+      if curl -fsS -m 20 -X POST "$mode" >/dev/null; then echo "wake: fired $mode"
+      else
+        echo "wake: http wake failed for $h — degrading to notify" >&2
+        cmd_notify "[olympus] wake failed for $h" "endpoint: $mode — heartbeat floor will catch pending mail"
+      fi ;;
     notify|*)
       cmd_notify "[olympus] $h has pending work" "run: bin/olympus heartbeat $h" ;;
   esac
