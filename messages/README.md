@@ -4,7 +4,7 @@ Full protocol: `rules/02 §3–4`. Quick card:
 
 **Layout**: `inbox/<handle>/` per member (the wizard creates them); `archive/` for done letters.
 
-**Send**: new file in `inbox/<recipient>/` named `YYYYMMDD-HHMMZ-<sender>-<slug>.md` (**UTC, `Z` mandatory**, from `date -u +%Y%m%d-%H%M`), YAML head (from/to/date/re/needs/status: open, date as `…T…Z`). Never edit after sending. `bin/olympus letter <to> --needs <kind>` writes the skeleton.
+**Send**: new file in `inbox/<recipient>/` named `YYYYMMDD-HHMMSSZ-<sender>-<slug>.md` (**UTC, `Z` mandatory**, from `date -u +%Y%m%d-%H%M%S`), YAML head (from/to/date/re/needs/status: open, date as `…T…Z`). Never edit after sending (sole exception: the sender’s `[fallback-applied]` append on an expired decision letter, rules/02 §3). `bin/olympus letter <to> --needs <kind>` writes the skeleton.
 
 **`needs:`** = what unblocks you: `none|info|review|decision|approval` (rules/02 §3.1). A `decision` letter must carry choices + recommendation + `due` + `fallback` — **the fallback applies itself** when the due passes (sender proceeds, appends `> [fallback-applied] …`). `approval` (danger table) never falls back and is human-only.
 
