@@ -181,13 +181,23 @@ cmd_touch() {
 
 cmd_doctor() {
   RED=0; YEL=0
+  # --template (G6): on the uninstantiated template repo, the two expected findings
+  # (placeholders, example-seat backlog) report yellow instead of red, so the template
+  # can run doctor in its own pre-commit hook without lying about severity elsewhere.
+  template=0; [ "${1:-}" = "--template" ] && template=1
   red() { RED=$((RED+1)); printf 'RED    %s\n' "$1"; }
   yel() { YEL=$((YEL+1)); printf 'yellow %s\n' "$1"; }
 
   # 1. project placeholders (outside the wizard) — an uninstantiated mountain
   ph="$(grep -rlE '\{\{(PROJECT_NAME|CODE_REPOS|INTEGRATION_BRANCH|TEST_COMMANDS|RELEASE_ORDER)\}\}' \
         --include='*.md' . 2>/dev/null | grep -v setup-wizard | grep -v '^\./bin/' || true)"
-  [ -n "$ph" ] && red "project placeholders survive (run prompts/setup-wizard.md): $(echo "$ph" | tr '\n' ' ')"
+  if [ -n "$ph" ]; then
+    if [ "$template" = 1 ]; then
+      yel "template mode: placeholders present (expected until setup-wizard runs)"
+    else
+      red "project placeholders survive (run prompts/setup-wizard.md): $(echo "$ph" | tr '\n' ' ')"
+    fi
+  fi
 
   # 2. tasks
   today="$(date -u +%Y%m%d)"
@@ -290,7 +300,12 @@ cmd_doctor() {
     seat="$(basename "$p" .md)"
     seat_report="$(work_unit_report inventory "$seat")"
     ready_free="$(printf '%s\n' "$seat_report" | awk -F '\t' '$1 == "RUNNABLE" { count++ } END { print count + 0 }')"
-    [ "$ready_free" -eq 0 ] && red "backlog empty for $seat: 0 assigned runnable work units — Orchestrator P0 (rules/02 §4.4)"
+    if [ "$ready_free" -eq 0 ]; then
+      case "$template:$p" in
+        1:*.example.md) yel "template mode: example seat $seat has an empty backlog (expected)";;
+        *) red "backlog empty for $seat: 0 assigned runnable work units — Orchestrator P0 (rules/02 §4.4)";;
+      esac
+    fi
   done
 
   # 8. stale worktrees at the workspace root

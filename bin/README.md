@@ -47,6 +47,14 @@ Three channels, independent, each useful alone — configure any of them in `oly
 3. **Notify (the human exit)** — `notify` posts to ntfy (a phone push from one curl) or a Lark
    webhook. Used by heartbeats for anything `inbox_autonomy` doesn't cover: the principal gets a
    drafted recommendation to approve, not a mystery to reconstruct.
+4. **wakeme (a low-latency wake home, optional)** — for a Codex seat you can replace the cron
+   heartbeat with [wakeme](https://github.com/lr00rl/wakeme)'s foreground cold loop: copy
+   `samples/wakeme.watch.example.json`, fill the absolute repo paths and the seat handle, then
+   `wakeme run <spec>`. It watches `messages/inbox/<handle>/` on this repo and, when mail lands,
+   starts one bounded stock `codex exec` turn that rescans the inbox — same contract as a
+   heartbeat run, seconds instead of hours. `excludeSenders: [<handle>]` stops self-wakes, and
+   per-spec locks refuse a second instance. **One wake home per seat still applies**: if wakeme
+   is the home, that seat's cron heartbeat must be off (keep `notify` as the human exit).
 
 **Budget rules for unattended runs** (non-negotiable — and now *enforced*, not requested):
 `heartbeat` itself wraps the agent in a **hard wall-clock timeout** (`HEARTBEAT_TIMEOUT_MIN`,

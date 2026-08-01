@@ -182,6 +182,27 @@ EOF
     || fail "conf value not loaded: $out"
 )
 
+# ---------- 6. doctor --template: expected template findings downgrade to yellow (G6) ----------
+W="$(make_sandbox template)"
+(
+  cd "$W"
+  printf 'project: {{PROJECT_NAME}}\n' > overview.md
+  printf 'handle: zeus.example\nstatus: active\n' > pantheon/zeus.example.md
+  out="$(bin/olympus doctor 2>&1 || true)"
+  echo "$out" | grep -q '^RED.*placeholders' && echo "$out" | grep -q '^RED.*backlog empty' \
+    && pass "plain doctor keeps both template findings red" \
+    || fail "plain doctor missing expected reds: $out"
+  if out="$(bin/olympus doctor --template 2>&1)"; then
+    echo "$out" | grep -q 'doctor: 0 red' \
+      && echo "$out" | grep -q 'template mode: placeholders present' \
+      && echo "$out" | grep -q 'template mode: example seat' \
+      && pass "doctor --template downgrades exactly the two expected findings" \
+      || fail "template mode output unexpected: $out"
+  else
+    fail "doctor --template exited nonzero: $out"
+  fi
+)
+
 say "----"
 if [ "$FAIL" -eq 0 ]; then
   say "PASS: enforcement suite (fallback expiry, noclobber letters, heartbeat/repo lock takeover)"

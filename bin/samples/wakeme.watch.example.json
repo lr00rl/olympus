@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "wakeme.watch/v1",
+  "id": "olympus-zeus-cold",
+  "binding": {
+    "driver": "codex-exec",
+    "threadId": "",
+    "workspace": "/absolute/path/to/olympus-repo",
+    "recipient": "zeus"
+  },
+  "source": {
+    "connector": "git",
+    "targets": [
+      {
+        "id": "coordination",
+        "location": "/absolute/path/to/olympus-repo",
+        "config": {"ref": "origin/main"}
+      }
+    ],
+    "detector": {
+      "kind": "changed_paths",
+      "config": {"include": ["messages/inbox/zeus/*.md"]}
+    },
+    "decoder": "mailbox_message_v1"
+  },
+  "filters": {
+    "excludeSenders": ["zeus"]
+  },
+  "policy": {
+    "whenIdle": "resume_workflow",
+    "whenActive": "enqueue",
+    "workflow": "rescan_authority",
+    "coalesceFor": "0s"
+  },
+  "health": {
+    "warnAfterConsecutiveFailures": 10
+  }
+}
