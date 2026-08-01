@@ -1,4 +1,8 @@
-# olympus.conf — optional; copy to the repo root. Shell-sourced by bin/olympus.
+# olympus.conf — optional; copy to the repo root.
+# PARSED as whitelisted key=value lines, never shell-sourced: nothing here is executed
+# at load time (repo write access must not equal shell execution — bin/README security
+# line). Unknown keys are ignored with a warning. AGENT_CMD's value IS a command, but
+# it runs only inside heartbeat's hard wall-clock budget.
 # Everything commented out = that channel stays off. Hands keep working regardless.
 
 # Command used for unattended heartbeat runs. Unset ⇒ heartbeat only reports & notifies.

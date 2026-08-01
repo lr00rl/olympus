@@ -158,6 +158,30 @@ W="$(make_sandbox repolock)"
     || fail "repo lock leaked"
 )
 
+# ---------- 5. conf is parsed, never executed (G8) ----------
+W="$(make_sandbox conf)"
+(
+  cd "$W"
+  cat > olympus.conf <<EOF
+# a hostile conf must not gain shell execution at load time
+\$(touch "$W/PWNED-subst")
+touch "$W/PWNED-cmd"
+EVIL_KEY=whatever
+OLYMPUS_HANDLE="alice"
+EOF
+  # letter needs a sender: without env, it can only come from the parsed conf
+  out="$(bin/olympus letter bob viaconf --needs none 2>&1)"
+  [ ! -e "$W/PWNED-subst" ] && [ ! -e "$W/PWNED-cmd" ] \
+    && pass "conf lines are never executed at load" \
+    || fail "conf achieved shell execution"
+  echo "$out" | grep -q 'ignoring unknown conf key: EVIL_KEY' \
+    && pass "unknown conf keys are ignored with a warning" \
+    || fail "unknown key not warned: $out"
+  echo "$out" | grep -q 'wrote messages/inbox/bob/.*-alice-viaconf.md' \
+    && pass "whitelisted quoted conf value (OLYMPUS_HANDLE) is loaded" \
+    || fail "conf value not loaded: $out"
+)
+
 say "----"
 if [ "$FAIL" -eq 0 ]; then
   say "PASS: enforcement suite (fallback expiry, noclobber letters, heartbeat/repo lock takeover)"

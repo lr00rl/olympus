@@ -16,12 +16,35 @@
 #   wake <handle>          fire a seat's wake channel per olympus.conf
 #   notify <title> [body]  push a message to the humans (ntfy / Lark / stdout fallback)
 #
-# Config (optional, shell-sourced): olympus.conf at the repo root — see bin/samples/.
+# Config (optional): olympus.conf at the repo root — whitelisted key=value lines,
+# parsed (never shell-sourced); see bin/samples/.
 set -eu
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "olympus: run inside the Olympus repo" >&2; exit 1; }
 cd "$ROOT"
-[ -f "$ROOT/olympus.conf" ] && . "$ROOT/olympus.conf"
+
+# olympus.conf is PARSED, never sourced (G8): repo write access must not equal shell
+# execution on the next heartbeat/CI run. Whitelisted key=value only; values are
+# assigned verbatim — nothing in the file is ever executed at load time.
+load_conf() {
+  [ -f "$ROOT/olympus.conf" ] || return 0
+  while IFS= read -r cl || [ -n "$cl" ]; do
+    case "$cl" in ''|\#*) continue;; esac
+    case "$cl" in *=*) : ;; *) continue;; esac
+    ck="${cl%%=*}"; cv="${cl#*=}"
+    case "$ck" in ''|*[!A-Za-z0-9_]*) continue;; esac
+    case "$cv" in
+      \"*\") cv="${cv#\"}"; cv="${cv%\"}";;
+      \'*\') cv="${cv#\'}"; cv="${cv%\'}";;
+    esac
+    case "$ck" in
+      AGENT_CMD|NTFY_TOPIC|LARK_WEBHOOK|HEARTBEAT_TIMEOUT_MIN|OLYMPUS_FALLBACK_GRACE_MIN|OLYMPUS_REPO_LOCK_MAX_MIN|OLYMPUS_HANDLE|WAKE_*)
+        eval "$ck=\$cv";;    # key is whitelist-shaped; \$cv assigns without a second expansion
+      *) echo "olympus: ignoring unknown conf key: $ck" >&2;;
+    esac
+  done < "$ROOT/olympus.conf"
+}
+load_conf
 
 # ---------- shared helpers ----------
 
