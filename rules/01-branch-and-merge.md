@@ -51,7 +51,14 @@ git checkout -b feat/<handle>-task<NNNN>-<slug> origin/{{INTEGRATION_BRANCH}}
 
    **Same-principal shortcut**: when the requesting seat and the required acker share one `principal`, the ack holds by construction — record a one-line `[ack]` where it is due and move on; no letter round-trip. (Kills the "writing letters to yourself" ceremony in small teams without weakening the record.)
 
-## 5. The merge (task owner executes; multi-repo in {{RELEASE_ORDER}} order)
+## 5. The merge — two tiers (owner ruling, 2026-08-01)
+
+**Tier 1 · authorized agent merges directly (the default).** With every §4 precondition
+green, the merge is executed by an **authorized seat in an interactive session** — the task
+owner, or the Orchestrator/Integrator seat merging on the team's behalf. The authorization
+is a pre-authorized execution recorded in that seat's profile naming this rule (rules/03
+§2.5); **unattended runs still never merge** (bin/README budget rules — that line is older
+than this one and survives it).
 
 ```bash
 git checkout {{INTEGRATION_BRANCH}}
@@ -61,6 +68,22 @@ git merge --no-ff feat/<handle>-task<NNNN>-<slug>  # --no-ff keeps the task boun
 git push origin {{INTEGRATION_BRANCH}}
 git push origin feat/<handle>-task<NNNN>-<slug>    # keep the branch for the record; prune periodically
 ```
+
+**Tier 2 · sensitive merges go up as a PR and a human approves before they land.** Check
+before merging — `git diff --name-only origin/{{INTEGRATION_BRANCH}}...HEAD` against this
+list; one hit ⇒ Tier 2:
+
+- anything under `contract/` (interface contracts, shared-resource ledger);
+- auth / permission / security semantics, or any scope named by a profile's `gated_by`;
+- CI, workflow, git-hook, or deploy configuration — the danger table's blast radius
+  (rules/03), even though the merge itself is not a danger-table action;
+- another seat's exclusive paths beyond what their recorded ack covered;
+- anything the Integrator or Arbiter has explicitly marked sensitive for this repo.
+
+On GitHub-hosted repos, mechanize Tier 2 instead of remembering it: branch protection on
+`{{INTEGRATION_BRANCH}}` + a `CODEOWNERS` file mapping the list above to human reviewers —
+copy `bin/samples/CODEOWNERS.example`. Agents may *open* the Tier-2 PR with everything
+staged (tests, acks, description); the approval click is the human's.
 
 Then push the Olympus side: finish letter + task status + status board.
 
