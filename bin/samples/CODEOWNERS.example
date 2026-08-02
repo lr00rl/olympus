@@ -1,0 +1,23 @@
+# CODEOWNERS.example — mechanizes rules/01 §5 Tier 2 on GitHub-hosted CODE repos.
+# Copy to <code-repo>/.github/CODEOWNERS, replace the handles, and enable branch
+# protection on the integration branch with "Require review from Code Owners".
+# Result: ordinary merges stay with the authorized agent (Tier 1); paths listed
+# here demand an approving human review before the PR can land (Tier 2).
+#
+# Match the Tier-2 list in rules/01 §5 — adjust paths to the repo's layout:
+
+# contract-level interfaces / shared resources (Contract Steward's human)
+/contract/            @your-contract-steward-human
+/api/                 @your-contract-steward-human
+
+# auth / permission / security semantics
+/auth/                @your-security-human
+/security/            @your-security-human
+
+# CI, workflows, hooks, deploy configuration — the danger table's blast radius
+/.github/             @your-ops-owner-human
+/deploy/              @your-ops-owner-human
+/Dockerfile           @your-ops-owner-human
+
+# add repo-specific sensitive paths the Integrator/Arbiter has marked:
+# /migrations/        @your-ops-owner-human
